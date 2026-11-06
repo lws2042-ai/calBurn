@@ -2,7 +2,9 @@
 // 물리 규칙: 화살 데미지 = 내 체중으로 계산한 운동 순소모 kcal,
 //            재장전 = 실제 운동 시간 × 60ms  →  DPS = 그 운동의 분당 소모 kcal (강도가 곧 화력)
 
+import { addDays } from './dates.js'
 import { exerciseKcal } from './exercise.js'
+import { classifyFood, emojiFor, isAggregate } from './foodClass.js'
 
 /** 대표 1회 제공량 기준 대략값 (kcal) */
 export const FOODS = [
@@ -112,6 +114,89 @@ export function rankOf(score) {
   if (score >= 2500) return { grade: 'A', title: '버너' }
   if (score >= 1000) return { grade: 'B', title: '러너' }
   return { grade: 'C', title: '입문자' }
+}
+
+// ── 실제 식단 → 게임 컨디션 ─────────────────────────
+// 최근 7일 기록의 건강/해로움 비율이 게임 시작 조건을 바꾼다.
+const NEUTRAL_FX = { lifeDelta: 0, shield: 0, dmgMult: 1, cdMult: 1, fallMult: 1, junkHpMult: 1 }
+export const DIET_TIERS = [
+  { id: 'clean', min: 0.3, label: '🥗 클린 식단', fx: { ...NEUTRAL_FX, lifeDelta: 1, shield: 1, dmgMult: 1.15, fallMult: 0.9 }, desc: '💓+1 · 🛡️ 쉴드로 시작 · 화살 +15% · 낙하 −10%' },
+  { id: 'good', min: 0.1, label: '🙂 괜찮은 식단', fx: { ...NEUTRAL_FX, shield: 1, dmgMult: 1.05 }, desc: '🛡️ 쉴드로 시작 · 화살 +5%' },
+  { id: 'normal', min: -0.1, label: '😐 보통 식단', fx: NEUTRAL_FX, desc: '효과 없음' },
+  { id: 'greasy', min: -0.3, label: '🍟 기름진 한 주', fx: { ...NEUTRAL_FX, cdMult: 1.15, fallMult: 1.1 }, desc: '재장전 +15% (나트륨 부종) · 낙하 +10%' },
+  { id: 'junk', min: -Infinity, label: '🍕 정크 위크', fx: { ...NEUTRAL_FX, lifeDelta: -1, cdMult: 1.25, fallMult: 1.2, junkHpMult: 1.15 }, desc: '💔−1 · 재장전 +25% · 낙하 +20% · 정크 체력 +15%' },
+]
+const NONE_TIER = { id: 'none', label: '📭 기록 없음', fx: NEUTRAL_FX, desc: '음식을 기록하면 식단이 게임에 반영됩니다' }
+
+/**
+ * @returns { tier, score(−1~1), counts, effects, pool(게임에 떨어질 내 음식), top }
+ */
+export function dietCondition(entries, today, days = 7, poolDays = 14) {
+  const counts = { healthy: 0, harmful: 0, neutral: 0 }
+  const named = { healthy: new Map(), harmful: new Map() }
+  const pool = new Map()
+
+  for (let i = 0; i < poolDays; i++) {
+    const date = addDays(today, -i)
+    for (const f of entries[date]?.foods ?? []) {
+      const cls = classifyFood(f)
+      if (i < days && (!isAggregate(f) || f.name?.startsWith('간편:'))) {
+        counts[cls]++
+        if (cls !== 'neutral' && !isAggregate(f)) named[cls].set(f.name, (named[cls].get(f.name) ?? 0) + 1)
+      }
+      if (isAggregate(f) || !f.name) continue
+      const kcal = Math.round(Math.min(1600, Math.max(60, Number(f.kcal) || 0)))
+      if (!pool.has(f.name) || pool.get(f.name).kcal < kcal) {
+        pool.set(f.name, { name: f.name, emoji: emojiFor(f.name), kcal, cls, kind: cls === 'healthy' ? 'healthy' : 'junk', mine: true })
+      }
+    }
+  }
+
+  const total = counts.healthy + counts.harmful + counts.neutral
+  const score = total ? (counts.healthy - counts.harmful) / total : 0
+  const tier = total ? DIET_TIERS.find((t) => score >= t.min) : NONE_TIER
+  const top = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n)
+  return {
+    tier,
+    score,
+    counts,
+    effects: tier.fx,
+    pool: [...pool.values()],
+    top: { healthy: top(named.healthy), harmful: top(named.harmful) },
+  }
+}
+
+// ── 실제 운동량 → 공격력 ─────────────────────────
+// 최근 7일 운동 순소모 kcal이 많을수록 화살이 강해진다 (근력·심폐 단련).
+export const TRAINING_TIERS = [
+  { min: 5000, label: '🏆 철인', dmgMult: 1.35, cdMult: 0.85, desc: '화살 +35% · 재장전 −15%' },
+  { min: 3000, label: '💪 단련됨', dmgMult: 1.25, cdMult: 0.9, desc: '화살 +25% · 재장전 −10%' },
+  { min: 1500, label: '🏃 활동적', dmgMult: 1.15, cdMult: 1, desc: '화살 +15%' },
+  { min: 500, label: '🚶 몸풀기', dmgMult: 1.05, cdMult: 1, desc: '화살 +5%' },
+  { min: 0, label: '🛋️ 운동 부족', dmgMult: 1, cdMult: 1, desc: '보너스 없음 — 운동을 기록하면 화살이 강해집니다' },
+]
+
+export function trainingCondition(entries, today, weightKg, profile, days = 7) {
+  let kcal = 0
+  let sessions = 0
+  for (let i = 0; i < days; i++) {
+    for (const x of entries[addDays(today, -i)]?.exercises ?? []) {
+      kcal += exerciseKcal(x, weightKg, profile)
+      sessions++
+    }
+  }
+  const tier = TRAINING_TIERS.find((t) => kcal >= t.min)
+  const next = [...TRAINING_TIERS].reverse().find((t) => t.min > kcal) ?? null
+  return { kcal: Math.round(kcal), sessions, tier, next }
+}
+
+/** 식단 효과 × 운동 효과 → 최종 게임 효과 */
+export function combineEffects(diet, training) {
+  return {
+    ...diet.effects,
+    dmgMult: diet.effects.dmgMult * training.tier.dmgMult,
+    cdMult: diet.effects.cdMult * training.tier.cdMult,
+  }
 }
 
 /** 게임 점수 → 보너스 XP (판당 최대 20) */

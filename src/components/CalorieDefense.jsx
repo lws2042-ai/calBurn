@@ -9,6 +9,9 @@ import {
   pickFood,
   pickWeighted,
   POWERUPS,
+  combineEffects,
+  dietCondition,
+  trainingCondition,
   rankOf,
   runKmFor,
   themeOf,
@@ -86,7 +89,7 @@ function createSfx(isMuted) {
   }
 }
 
-export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
+export default function CalorieDefense({ weightKg, profile, best, onFinish, entries, today }) {
   const wrapRef = useRef(null)
   const canvasRef = useRef(null)
   const gameRef = useRef(null)
@@ -105,6 +108,11 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
   })
   const [result, setResult] = useState(null)
   const arrows = useMemo(() => buildArrows(weightKg, profile), [weightKg, profile])
+  // 실제 식단 → 게임 컨디션 (최근 7일) + 떨어질 내 음식 (최근 14일)
+  const diet = useMemo(() => dietCondition(entries ?? {}, today), [entries, today])
+  // 실제 운동량 → 공격력 (최근 7일 운동 순소모 kcal)
+  const training = useMemo(() => trainingCondition(entries ?? {}, today, weightKg, profile), [entries, today, weightKg, profile])
+  const fxAll = useMemo(() => combineEffects(diet, training), [diet, training])
 
   useEffect(() => {
     onFinishRef.current = onFinish
@@ -136,6 +144,8 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
   useEffect(() => {
     if (phase !== 'playing') return
     const C = gameColors()
+    const fx = fxAll
+    const myPool = diet.pool
     const sfx = createSfx(() => mutedRef.current)
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
@@ -159,8 +169,9 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       cd: 0,
       cdMax: 1,
       spawnIn: 600,
-      lives: LIVES,
-      shield: 0,
+      lives: Math.max(1, Math.min(MAX_LIVES, LIVES + fx.lifeDelta)),
+      shield: fx.shield,
+      mineKills: 0,
       score: 0,
       burned: 0,
       eatenKcal: 0,
@@ -175,7 +186,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       feverT: 0,
       slowT: 0,
       wave: 1,
-      banner: { text: `WAVE 1 · ${themeOf(1).name}`, t: 1800 },
+      banner: { text: diet.tier.id === 'none' ? `WAVE 1 · ${themeOf(1).name}` : `${diet.tier.label} 컨디션으로 시작!`, t: 2000 },
       bossWave: 0,
       bossesKilled: 0,
       healthyEaten: 0,
@@ -204,6 +215,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       g.score += gained
       g.burned += food.kcal
       g.kills[food.name] = (g.kills[food.name] ?? 0) + 1
+      if (food.mine) g.mineKills++
       sfx.kill(g.combo)
       if (g.combo === FEVER_COMBO || (g.combo > FEVER_COMBO && g.combo % FEVER_COMBO === 0)) {
         g.feverT = FEVER_MS
@@ -217,18 +229,31 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       if (g.cd > 0 || g.over) return
       const a = arrows[selRef.current]
       const fever = g.feverT > 0
-      g.shots.push({ x: g.x, y: H - GROUND - 18, dmg: a.kcal, pierce: fever, hit: new Set() })
-      g.cd = g.cdMax = a.cooldownMs * (fever ? 0.5 : 1)
+      // 식단 컨디션: 데미지·재장전 보정
+      g.shots.push({ x: g.x, y: H - GROUND - 18, dmg: a.kcal * fx.dmgMult, pierce: fever, hit: new Set() })
+      g.cd = g.cdMax = a.cooldownMs * fx.cdMult * (fever ? 0.5 : 1)
       g.shotsFired++
       sfx.shoot()
     }
 
     function spawn() {
       const wave = g.wave
-      const speed = 34 + wave * 8
+      const speed = (34 + wave * 8) * fx.fallMult
       const x = 30 + Math.random() * (W - 60)
       const base = { id: g.nextId++, x, y: -26, hit: 0 }
       const r = Math.random()
+      // 내가 실제로 먹은 음식 (40%)
+      if (myPool.length && r >= 0.06 && Math.random() < 0.4) {
+        const m = myPool[Math.floor(Math.random() * myPool.length)]
+        if (m.kind === 'healthy') {
+          g.foods.push({ ...base, ...m, hp: m.kcal, vy: speed * 0.85 + Math.random() * 10, r: 20 })
+        } else {
+          const big = m.kcal > 700 // 큰 한 끼는 미니 보스급
+          const hp = Math.round(m.kcal * fx.junkHpMult)
+          g.foods.push({ ...base, ...m, kcal: hp, hp, vy: (big ? speed * 0.7 : speed) + Math.random() * 12, r: big ? 32 : 22, big })
+        }
+        return
+      }
       if (r < 0.06) {
         const p = pickWeighted(POWERUPS)
         g.foods.push({ ...base, ...p, kind: 'power', hp: 1, kcal: 1, vy: speed * 0.9, r: 20 })
@@ -237,7 +262,8 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
         g.foods.push({ ...base, ...h, kind: 'healthy', hp: h.kcal, vy: speed * 0.85 + Math.random() * 10, r: 20 })
       } else {
         const f = pickFood(Math.random, themeOf(wave).boost)
-        g.foods.push({ ...base, ...f, kind: 'junk', hp: f.kcal, vy: speed + Math.random() * 14, r: 22 })
+        const hp = Math.round(f.kcal * fx.junkHpMult)
+        g.foods.push({ ...base, ...f, kind: 'junk', kcal: hp, hp, vy: speed + Math.random() * 14, r: 22 })
       }
     }
 
@@ -409,6 +435,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
           kills: g.kills,
           maxCombo: g.maxCombo,
           bossesKilled: g.bossesKilled,
+          mineKills: g.mineKills,
           healthyEaten: g.healthyEaten,
           healthyShot: g.healthyShot,
           wave: g.wave,
@@ -425,7 +452,17 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
 
     function drawFood(f) {
       const boss = f.kind === 'boss'
-      const size = boss ? 64 : 32
+      const size = boss ? 64 : f.big ? 46 : 32
+      // 내가 먹은 음식: 금색 테두리
+      if (f.mine && f.kind === 'junk') {
+        ctx.beginPath()
+        ctx.arc(f.x, f.y, f.r + 3, 0, Math.PI * 2)
+        ctx.strokeStyle = C.gold
+        ctx.globalAlpha = 0.55
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+        ctx.globalAlpha = 1
+      }
       if (f.kind === 'healthy' || f.kind === 'power') {
         ctx.beginPath()
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2)
@@ -448,9 +485,10 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       ctx.shadowBlur = 0
 
       // 이름 / 안내
-      const label = f.kind === 'healthy' ? `${f.name} · 쏘지 마세요` : f.kind === 'power' ? `${f.name} · ${f.desc}` : f.name
+      const mineTag = f.mine ? ' · 내 기록' : ''
+      const label = f.kind === 'healthy' ? `${f.name}${mineTag} · 쏘지 마세요` : f.kind === 'power' ? `${f.name} · ${f.desc}` : `${f.name}${mineTag}`
       ctx.font = `600 ${boss ? 13 : 11}px "IBM Plex Sans KR",sans-serif`
-      ctx.fillStyle = f.kind === 'healthy' ? C.healthy : f.kind === 'power' ? C.info : boss ? C.gold : C.text
+      ctx.fillStyle = f.kind === 'healthy' ? C.healthy : f.kind === 'power' ? C.info : boss || f.mine ? C.gold : C.text
       ctx.globalAlpha = 0.9
       ctx.fillText(label, f.x, f.y - (boss ? 46 : 26))
       ctx.globalAlpha = 1
@@ -695,7 +733,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('keyup', onKey)
     }
-  }, [phase, arrows, weightKg])
+  }, [phase, arrows, weightKg, diet, fxAll])
 
   const rank = result ? rankOf(result.score) : null
 
@@ -714,7 +752,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       <div className="defense__stage">
         <canvas ref={canvasRef} className={phase === 'ready' ? 'hidden' : ''} />
         {phase === 'ready' && (
-          <div className="defense__overlay">
+          <div className="defense__overlay defense__overlay--ready">
             <div className="defense__title glow-text">칼로리 디펜스</div>
             <p>
               하늘에서 음식이 떨어집니다. 운동 화살로 칼로리를 태워 없애세요.
@@ -723,6 +761,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
                 화살 데미지 = <b>당신의 체중({weightKg.toFixed(1)}kg)</b>으로 계산한 실제 소모 kcal · 재장전 = 실제 운동 시간
               </span>
             </p>
+            <DietCard diet={diet} training={training} fx={fxAll} />
             <ul className="defense__rules">
               <li>
                 <b>🔥 콤보</b> 놓치지 않고 연속 처치 → 점수 최대 ×3, <b>10콤보</b>면 <b>애프터번 피버</b>(관통·연사)
@@ -753,6 +792,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
               <span>WAVE {result.wave}</span>
               <span>최고 콤보 {result.maxCombo}</span>
               <span>보스 격파 {result.bossesKilled}</span>
+              {result.mineKills > 0 && <span>🍽️ 내 음식 처치 {result.mineKills}</span>}
               <span>🥦 먹음 {result.healthyEaten}</span>
               {result.healthyShot > 0 && <span className="c-bad">🥦 오사격 {result.healthyShot}</span>}
               {result.xp > 0 && <span className="c-good">+{result.xp} XP</span>}
@@ -783,6 +823,48 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish }) {
       <p className="muted small">
         화력(DPS) = 분당 소모 kcal. 같은 시간이면 강도가 높은 운동이 더 강합니다. 큰 화살은 재장전이 길어 작은 음식엔 화력이 낭비됩니다.
       </p>
+    </div>
+  )
+}
+
+/** 시작 화면: 내 식단 컨디션과 게임 효과 */
+function DietCard({ diet, training, fx }) {
+  const { tier, counts, top, pool } = diet
+  const tone = { clean: 'good', good: 'good', normal: 'neutral', greasy: 'bad', junk: 'bad', none: 'neutral' }[tier.id]
+  return (
+    <div className={`diet-card diet-card--${tone}`}>
+      <div className="diet-card__head">
+        <b>최근 7일 식단 컨디션: {tier.label}</b>
+      </div>
+      <div className="diet-card__fx">{tier.desc}</div>
+      {tier.id !== 'none' && (
+        <div className="diet-card__counts small">
+          <span className="c-good">건강 {counts.healthy}</span> · <span className="c-bad">해로움 {counts.harmful}</span> · <span className="muted">중립 {counts.neutral}</span>
+          {top.harmful.length > 0 && <span className="muted"> — 주범: {top.harmful.join(', ')}</span>}
+          {top.healthy.length > 0 && <span className="muted"> — 잘한 선택: {top.healthy.join(', ')}</span>}
+        </div>
+      )}
+      {pool.length > 0 && <div className="muted small">내가 먹은 음식 {pool.length}종이 하늘에서 떨어집니다 (금색 테두리 = 내 기록)</div>}
+
+      <div className="diet-card__sep" />
+      <div className="diet-card__head">
+        <b>
+          최근 7일 운동: {training.tier.label} <span className="mono muted">({training.kcal.toLocaleString()} kcal · {training.sessions}회)</span>
+        </b>
+      </div>
+      <div className={`diet-card__fx ${training.tier.dmgMult > 1 ? 'c-good' : 'muted'}`}>{training.tier.desc}</div>
+      {training.next && (
+        <div className="muted small">
+          {training.next.label}까지 {(training.next.min - training.kcal).toLocaleString()} kcal 더 → {training.next.desc}
+        </div>
+      )}
+
+      <div className="diet-card__total mono small">
+        최종: 화살 ×{fx.dmgMult.toFixed(2)} · 재장전 ×{fx.cdMult.toFixed(2)}
+        {fx.lifeDelta !== 0 && ` · 생명 ${fx.lifeDelta > 0 ? '+' : ''}${fx.lifeDelta}`}
+        {fx.shield > 0 && ' · 쉴드 1'}
+        {fx.fallMult !== 1 && ` · 낙하 ×${fx.fallMult.toFixed(2)}`}
+      </div>
     </div>
   )
 }

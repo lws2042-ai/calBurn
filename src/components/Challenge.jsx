@@ -101,6 +101,8 @@ export default function Challenge({ game, state, analysis, dispatch }) {
           weightKg={analysis.current}
           profile={state.profile}
           best={state.game?.best ?? 0}
+          entries={state.entries}
+          today={analysis.today}
           onFinish={(r) => dispatch({ type: 'gameResult', result: r, date: analysis.today })}
         />
       </section>

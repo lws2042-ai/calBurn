@@ -19,5 +19,26 @@
 .rank--SS { animation: rank-pulse 1.2s ease-in-out infinite; }
 @keyframes rank-pulse { 50% { box-shadow: 0 0 32px 2px #f7c948; } }
 
+/* 식단 컨디션 카드 */
+.diet-card {
+  display: grid; gap: 4px; padding: 10px 14px; max-width: 540px; text-align: left; font-size: 0.88rem;
+  border: 1px solid var(--line-strong); border-left: 3px solid var(--muted); border-radius: var(--r-sm);
+  background: rgba(var(--bg-rgb), 0.7);
+}
+.diet-card--good { border-left-color: var(--accent); }
+.diet-card--good .diet-card__fx { color: var(--accent); }
+.diet-card--bad { border-left-color: var(--bad); }
+.diet-card--bad .diet-card__fx { color: var(--bad); }
+.diet-card__fx { font-weight: 600; }
+.diet-card__sep { height: 1px; background: var(--line); margin: 6px 0 2px; }
+.diet-card__total { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line-strong); color: var(--accent); }
+/* 내용이 길면 위에서부터 스크롤 (가운데 정렬 때문에 위·아래가 잘리지 않게) */
+.defense__overlay { overflow-y: auto; justify-content: flex-start; }
+.defense__overlay > :first-child { margin-top: auto; }
+.defense__overlay > :last-child { margin-bottom: auto; }
+
 .defense__stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 12px; }
 .defense__stats span { padding: 2px 8px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); }
+
+/* 시작 화면: 캔버스가 숨겨져 있으므로 내용 길이만큼 늘어난다 (버튼이 잘리지 않게) */
+.defense__overlay--ready { position: relative; inset: auto; width: 100%; min-height: 460px; overflow: visible; }

@@ -48,6 +48,60 @@ const EVENTS = [
   ['10-31', 600, 1200],
 ]
 
+/** 메뉴: [이름, kcal, 1회 g, 단백질 g] */
+const CLEAN_MENU = [
+  ['닭가슴살 샐러드', 320, 300, 32],
+  ['고구마', 190, 150, 2],
+  ['현미밥', 300, 210, 6],
+  ['두부조림', 220, 200, 18],
+  ['사과', 95, 180, 0],
+  ['그릭요거트', 150, 150, 15],
+  ['삶은 달걀 2개', 150, 100, 13],
+  ['연어 덮밥', 560, 380, 30],
+  ['바나나', 105, 120, 1],
+]
+const NORMAL_MENU = [
+  ['김치찌개', 420, 500, 22],
+  ['비빔밥', 620, 450, 20],
+  ['된장찌개 백반', 650, 600, 25],
+  ['제육볶음 정식', 780, 500, 30],
+  ['잔치국수', 480, 550, 14],
+]
+const JUNK_MENU = [
+  ['후라이드 치킨 반마리', 1050, 400, 60],
+  ['맥주 500ml', 210, 500, 0],
+  ['라면', 500, 550, 10],
+  ['페퍼로니 피자 2조각', 600, 220, 24],
+  ['떡볶이', 480, 350, 9],
+  ['아이스크림', 260, 120, 4],
+  ['감자튀김', 330, 110, 4],
+  ['삼겹살 2인분', 1300, 400, 50],
+]
+
+/** 하루 섭취를 메뉴 단위로 나눈다. 과식한 날은 정크 위주, 평일은 건강식 위주 */
+function splitIntoMeals(total, sodiumMg, carbsG, indulgent, rand, dayIdx) {
+  const foods = []
+  let left = total
+  let k = 0
+  while (left > 80 && k < 8) {
+    const r = rand()
+    const menu = indulgent ? (r < 0.6 ? JUNK_MENU : r < 0.85 ? NORMAL_MENU : CLEAN_MENU) : r < 0.55 ? CLEAN_MENU : r < 0.9 ? NORMAL_MENU : JUNK_MENU
+    const [name, kcal, g, protein] = menu[Math.floor(rand() * menu.length)]
+    const scale = Math.min(1, left / kcal)
+    const kc = Math.round(kcal * scale)
+    foods.push({ id: `f${dayIdx}-${k}`, name, amount: Math.round(g * scale), unit: 'g', kcal: kc, proteinG: Math.round(protein * scale) })
+    left -= kc
+    k++
+  }
+  // 하루 나트륨·탄수화물은 kcal 비율로 나눠 담는다 (수분 예보가 계속 동작하도록)
+  const sum = foods.reduce((s, f) => s + f.kcal, 0) || 1
+  for (const f of foods) {
+    f.sodiumMg = Math.round((sodiumMg * f.kcal) / sum)
+    f.carbsG = Math.round((carbsG * f.kcal) / sum)
+  }
+  return foods
+}
+
 export function buildDemoState(today, startDate = `${today.slice(0, 4)}-01-01`) {
   const rand = rng(7)
   const gauss = () => (rand() + rand() + rand() + rand() - 2) * 0.9
@@ -101,7 +155,10 @@ export function buildDemoState(today, startDate = `${today.slice(0, 4)}-01-01`) 
     entries[date] = {
       weightKg: Math.round((fat + water) * 10) / 10, // 매일 측정
       foods: logged
-        ? [{ id: `f${i}`, name: '하루 식사 합계', amount: null, unit: null, kcal: Math.round(intake * honesty), sodiumMg: Math.round(sodiumMg * honesty), carbsG: Math.round(carbsG * honesty) }]
+        ? i >= days - 14
+          ? // 최근 2주는 실제 메뉴 단위로 (게임에 "내 음식"으로 등장)
+            splitIntoMeals(Math.round(intake * honesty), sodiumMg, carbsG, weekend || !!ev, rand, i)
+          : [{ id: `f${i}`, name: '하루 식사 합계', amount: null, unit: null, kcal: Math.round(intake * honesty), sodiumMg: Math.round(sodiumMg * honesty), carbsG: Math.round(carbsG * honesty) }]
         : [],
       exercises,
     }
