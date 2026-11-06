@@ -30,13 +30,13 @@ export default function Dashboard({ analysis: a, game, profile, entries, state, 
           sub={a.confidence > 0 ? `실측 보정 ${Math.round(a.confidence * 100)}%` : '공식 추정'}
         />
         <Stat
-          label="7일 수지"
+          label="7일 밸런스"
           value={`${fmtSigned(a.week.balance)} kcal`}
           sub={`≈ ${fmtSigned(kcalToFatG(a.week.balance))} g · ${a.week.days}일 기록`}
           tone={a.week.days ? (a.week.balance <= 0 ? 'good' : 'bad') : null}
         />
         <Stat
-          label="누적 수지"
+          label="누적 밸런스"
           value={`${fmtSigned(a.cumulative / 7700, 2)} kg`}
           sub={`${fmtSigned(a.cumulative)} kcal`}
           tone={a.cumulative <= 0 ? 'good' : 'bad'}
@@ -92,7 +92,7 @@ function BalanceKpi({ a, onLog }) {
   const r = a.todayRow
   if (r.balance == null) {
     return (
-      <Kpi label="오늘 에너지 수지" value="—" sub={`예상 소모 ${fmtInt(r.expend)} kcal · 섭취 미기록`}>
+      <Kpi label="오늘 칼로리 밸런스" value="—" sub={`예상 소모 ${fmtInt(r.expend)} kcal · 섭취 미기록`}>
         <button className="btn btn--primary small-btn" onClick={onLog}>
           지금 기록하기
         </button>
@@ -101,7 +101,7 @@ function BalanceKpi({ a, onLog }) {
   }
   return (
     <Kpi
-      label="오늘 에너지 수지"
+      label="오늘 칼로리 밸런스"
       value={fmtSigned(r.balance)}
       unit="kcal"
       tone={r.balance <= 0 ? 'good' : 'bad'}

@@ -7,7 +7,7 @@ const H = 200
 const PAD = { l: 44, r: 10, t: 12, b: 24 }
 const DAYS = 28
 
-/** 일별 에너지 수지 막대: 아래(녹색) = 적자, 위(적색) = 흑자 */
+/** 일별 칼로리 밸런스 막대: 아래(녹색) = 적자, 위(적색) = 흑자 */
 export default function BalanceChart({ analysis }) {
   const [ref, W] = useWidth()
   const glowId = `bglow${useId().replace(/[^a-zA-Z0-9]/g, '')}`
@@ -25,14 +25,14 @@ export default function BalanceChart({ analysis }) {
   return (
     <div ref={ref} className="chart">
       <div className="chart__head">
-        <h2>일별 에너지 수지</h2>
+        <h2>일별 칼로리 밸런스</h2>
         <span className="muted small mono">
           {h
             ? `${shortDate(h.date)} · ${h.balance == null ? '섭취 미기록' : `${fmtSigned(h.balance)} kcal (섭취 ${fmtInt(h.intake)} / 소모 ${fmtInt(h.expend)})`}`
             : `최근 ${DAYS}일 · 녹색 적자 / 적색 흑자`}
         </span>
       </div>
-      <svg width={W} height={H} onPointerLeave={() => setHover(null)} role="img" aria-label="일별 에너지 수지 차트">
+      <svg width={W} height={H} onPointerLeave={() => setHover(null)} role="img" aria-label="일별 칼로리 밸런스 차트">
         <defs>
           <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="2.2" result="b" />

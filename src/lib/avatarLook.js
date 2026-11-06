@@ -52,8 +52,8 @@ export function defaultLook(sex) {
     eyes: 'almond',
     face: 'oval',
     glasses: false,
-    top: { style: 'tshirt', color: '#2f7a52' },
-    bottom: F ? { style: 'slacks', color: '#1c1c1f' } : { style: 'shorts', color: '#1f3b63' },
+    top: { style: 'shirt', color: '#e8e4da' }, // 셔츠 · 아이보리
+    bottom: { style: 'jeans', color: '#3f6fb0' }, // 청바지 · 데님
   }
 }
 

@@ -79,12 +79,20 @@ export default function WeightInsight({ analysis, entries, onLog }) {
       {fat != null && (
         <div className="decomp">
           <div className="decomp__title muted small">어제→오늘 {fmtSigned(change, 2)} kg 분해 (에너지 보존 법칙)</div>
-          <div className="decomp__bar">
-            <DecompPart label="지방" value={fat} total={Math.abs(fat) + Math.abs(water)} cls="fat" />
-            <DecompPart label="수분 등" value={water} total={Math.abs(fat) + Math.abs(water)} cls="water" />
+          <div className="decomp__bar" aria-hidden="true">
+            <DecompPart value={fat} total={Math.abs(fat) + Math.abs(water)} cls="decomp__part--fat" />
+            <DecompPart value={water} total={Math.abs(fat) + Math.abs(water)} cls="decomp__part--water" />
+          </div>
+          <div className="decomp__legend small">
+            <span>
+              <i className="sw sw--fat" /> 지방 <b className="mono">{fmtSigned(fat * 1000)}g</b>
+            </span>
+            <span>
+              <i className="sw sw--water" /> 수분 등 <b className="mono">{fmtSigned(water * 1000)}g</b>
+            </span>
           </div>
           <div className="muted small">
-            어제 수지 {fmtSigned(fat * 7700)} kcal → 지방이 변할 수 있는 최대치는 <b className="mono">{fmtSigned(fat * 1000)} g</b>. 나머지{' '}
+            어제 밸런스 {fmtSigned(fat * 7700)} kcal → 지방이 변할 수 있는 최대치는 <b className="mono">{fmtSigned(fat * 1000)} g</b>. 나머지{' '}
             <b className="mono">{fmtSigned(water * 1000)} g</b>은 수분·글리코겐·장 내용물입니다.
           </div>
         </div>
@@ -93,13 +101,28 @@ export default function WeightInsight({ analysis, entries, onLog }) {
       {/* 어제 식단(나트륨·탄수화물)으로 예측했던 수분과 실제 비교 */}
       {forecast && water != null && (
         <div className="water small">
-          💧 어제 나트륨 {fmtInt(forecast.nutrients.sodiumMg)}mg
-          {forecast.nutrients.carbsG != null && ` · 탄수화물 ${fmtInt(forecast.nutrients.carbsG)}g`}로 예측한 수분{' '}
-          <b className="mono">
-            {fmtSigned(forecast.water.low, 1)}~{fmtSigned(forecast.water.high, 1)}kg
-          </b>
-          {' → '}실제 수분 등 <b className="mono">{fmtSigned(water, 2)}kg</b>
-          {water >= forecast.water.low - 0.15 && water <= forecast.water.high + 0.15 ? ' — 예측대로입니다. 식단 때문이지 지방이 아닙니다.' : ' — 수면·배변·운동 회복 등 다른 요인도 있습니다.'}
+          <div className="water__head">
+            <span>💧 수분 예측 vs 실제</span>
+          </div>
+          <div className="water__rows">
+            <div>
+              <span>
+                예측 <span className="muted">(어제 나트륨 {fmtInt(forecast.nutrients.sodiumMg)}mg{forecast.nutrients.carbsG != null && ` · 탄수 ${fmtInt(forecast.nutrients.carbsG)}g`})</span>
+              </span>
+              <span className="water__val mono">
+                {fmtSigned(forecast.water.low, 1)} ~ {fmtSigned(forecast.water.high, 1)}kg
+              </span>
+            </div>
+            <div>
+              <span>실제 수분 등</span>
+              <span className="water__val mono">{fmtSigned(water, 2)}kg</span>
+            </div>
+          </div>
+          <p className="muted">
+            {water >= forecast.water.low - 0.15 && water <= forecast.water.high + 0.15
+              ? '예측대로입니다. 식단 때문이지 지방이 아닙니다.'
+              : '예측과 차이가 있어요. 수면·배변·운동 회복 등 다른 요인도 있습니다.'}
+          </p>
         </div>
       )}
 
@@ -108,13 +131,8 @@ export default function WeightInsight({ analysis, entries, onLog }) {
   )
 }
 
-function DecompPart({ label, value, total, cls }) {
-  const pct = total > 0 ? Math.max(6, (Math.abs(value) / total) * 100) : 50
-  return (
-    <div className={`decomp__part ${cls}`} style={{ flexBasis: `${pct}%` }}>
-      <span>
-        {label} {fmtSigned(value * 1000)}g
-      </span>
-    </div>
-  )
+/** 분해 막대 한 칸: 색만 칠하고 숫자는 아래 범례에 둔다 (좁아도 찌그러지지 않게) */
+function DecompPart({ value, total, cls }) {
+  const pct = total > 0 ? Math.max(4, (Math.abs(value) / total) * 100) : 50
+  return <div className={`decomp__part ${cls}`} style={{ width: `${pct}%` }} />
 }

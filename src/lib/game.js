@@ -15,7 +15,7 @@ export const XP = {
   perfectDay: 15,
 }
 
-/** 건강한 수지 범위 (감량: −1000~−100, 증량: +100~+600) */
+/** 건강한 밸런스 범위 (감량: −1000~−100, 증량: +100~+600) */
 export function isHealthyBalance(balance, intake, losing, sex) {
   if (balance == null || intake == null) return false
   if (losing) return balance <= -100 && balance >= -1000 && intake >= (MIN_SAFE_INTAKE[sex] ?? 1200)

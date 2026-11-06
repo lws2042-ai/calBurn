@@ -118,7 +118,7 @@ describe('적응형 TDEE (핵심)', () => {
     assert.ok(a.warnings.some((w) => w.text.includes('데이터 수집 중')))
   })
 
-  it('오늘 수지 = 섭취 − (기저 + 운동)', () => {
+  it('오늘 밸런스 = 섭취 − (기저 + 운동)', () => {
     const state = synthesize({ days: 1, intake: 2000, trueTdee: 2500 })
     state.entries['2026-10-01'].exercises = [{ type: 'run', distanceKm: 5 }]
     const a = analyze(state, '2026-10-01')

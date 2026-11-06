@@ -1,5 +1,5 @@
 // 체중 데이터 해석: "숫자가 왜 변했는가"를 물리적으로 설명한다.
-// 체중계 변화 = 지방 변화(에너지 수지가 상한) + 수분·글리코겐·장 내용물 (나머지 전부)
+// 체중계 변화 = 지방 변화(칼로리 밸런스가 상한) + 수분·글리코겐·장 내용물 (나머지 전부)
 
 import { KCAL_PER_KG } from './constants.js'
 import { addDays } from './dates.js'
@@ -23,7 +23,7 @@ export function noiseSigma(series) {
 
 /**
  * 오늘 체중의 해석.
- * 핵심: 하루 사이 지방이 변할 수 있는 최대치 = 어제 에너지 수지 / 7700.
+ * 핵심: 하루 사이 지방이 변할 수 있는 최대치 = 어제 칼로리 밸런스 / 7700.
  * 그보다 큰 변화는 전부 수분 등 비(非)지방 요인이다.
  */
 export function interpretToday(series, sigma) {
@@ -56,7 +56,7 @@ export function interpretToday(series, sigma) {
 
 /**
  * 에너지 장부 체중: 기록된 kcal만으로 계산한 "있어야 할" 체중.
- * 시작점 = 첫 추세값. 섭취 미기록일은 기록일 평균 수지로 보간.
+ * 시작점 = 첫 추세값. 섭취 미기록일은 기록일 평균 밸런스로 보간.
  * 실제 추세와 벌어지면 → 기록 누락/오차 신호.
  */
 export function ledgerLine(series) {

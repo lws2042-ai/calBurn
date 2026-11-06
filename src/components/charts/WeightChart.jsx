@@ -242,7 +242,7 @@ export default function WeightChart({ analysis }) {
                 추세 대비 {fmtSigned(hover.weight - hover.trend, 2)} kg ({((hover.weight - hover.trend) / sigma).toFixed(1)}σ)
               </div>
             )}
-            <div className="muted">수지 {hover.balance == null ? '미기록' : `${fmtSigned(hover.balance)} kcal`}</div>
+            <div className="muted">밸런스 {hover.balance == null ? '미기록' : `${fmtSigned(hover.balance)} kcal`}</div>
             {hoverLedger && <div className="muted">장부 체중 {hoverLedger.w.toFixed(2)}</div>}
           </div>
         )}

@@ -26,15 +26,15 @@ export default function WaterForecast({ entries, date }) {
           {fmtSigned(water.low, 1)} ~ {fmtSigned(water.high, 1)} kg
         </b>
       </div>
-      <div className="water__rows mono small">
+      <div className="water__rows small">
         <div>
           나트륨 {fmtInt(nutrients.sodiumMg)}mg <span className="muted">(평소 {fmtInt(baseline.sodiumMg)})</span>
-          <span className="water__val">{fmtSigned(water.naKg, 2)}kg</span>
+          <span className="water__val mono">{fmtSigned(water.naKg, 2)}kg</span>
         </div>
         {nutrients.carbsG != null && (
           <div>
             탄수화물 {fmtInt(nutrients.carbsG)}g <span className="muted">(평소 {fmtInt(baseline.carbsG)})</span>
-            <span className="water__val">{fmtSigned(water.carbKg, 2)}kg</span>
+            <span className="water__val mono">{fmtSigned(water.carbKg, 2)}kg</span>
           </div>
         )}
       </div>

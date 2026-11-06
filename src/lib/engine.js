@@ -79,7 +79,7 @@ export function analyze(state, today) {
   const baseAt = (w) => (base * bmrAt(w)) / bmrNow
   const baseSlope = (base * 10) / bmrNow // d(baseAt)/dw, BMR의 체중계수 10
 
-  // ── 일별 에너지 수지 ──────────────────────────────
+  // ── 일별 칼로리 밸런스 ──────────────────────────────
   const daily = series.map((r) => {
     const expend = baseAt(r.trend ?? current) + r.exercise
     return { ...r, expend, balance: r.intake != null ? r.intake - expend : null }

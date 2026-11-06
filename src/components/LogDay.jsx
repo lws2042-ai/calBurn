@@ -142,7 +142,7 @@ function DaySummary({ row }) {
         </span>
         <span className="op">=</span>
         <span className="summary__result">
-          <small>수지</small>
+          <small>밸런스</small>
           {b == null ? '미기록' : fmtSigned(b)}
         </span>
       </div>

@@ -48,3 +48,23 @@ select {
 .comeback { border-color: var(--accent); box-shadow: var(--glow-strong); display: grid; gap: 8px; }
 .comeback__title { font-size: 1.05rem; font-weight: 700; color: var(--accent); text-shadow: var(--text-glow); }
 .comeback .btn { justify-self: start; }
+
+/* ─── 체중 분해 막대 (글자 없는 막대 + 아래 범례) ─── */
+.decomp__bar {
+  display: flex; height: 12px; gap: 2px; padding: 0; overflow: hidden;
+  border-radius: var(--r-sm); background: var(--line);
+}
+.decomp__part { flex: none; height: 100%; min-width: 4px; border: 0; border-radius: 1px; box-sizing: border-box; }
+.decomp__part--fat { background: var(--accent); box-shadow: 0 0 8px -2px var(--accent); }
+.decomp__part--water { background: rgba(var(--info-rgb), 0.55); }
+.decomp__legend { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.decomp__legend span { display: inline-flex; align-items: center; gap: 6px; }
+.decomp__legend b { color: var(--text); }
+.decomp__legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 1px; }
+.decomp__legend .sw--fat { background: var(--accent); }
+.decomp__legend .sw--water { background: rgba(var(--info-rgb), 0.55); }
+
+/* 수분 비교 박스: 줄 단위 정렬 */
+.water__rows > div { justify-content: space-between; }
+.water__rows > div > span:first-child { min-width: 0; }
+.water p { margin: 0; }
