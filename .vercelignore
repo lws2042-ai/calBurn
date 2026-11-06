@@ -1,0 +1,7 @@
+# 배포 업로드에서 제외 (특히 API 키가 든 .env)
+.env
+.env.*
+*.local
+node_modules
+dist
+.vscode
