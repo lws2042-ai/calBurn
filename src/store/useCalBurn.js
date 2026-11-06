@@ -103,6 +103,14 @@ function reducer(state, action) {
         couponsUsed: { ...state.couponsUsed, [action.coupon.id]: action.date },
       }
     }
+    case 'addReward':
+      return { ...state, rewards: [...(state.rewards ?? []), { ...action.reward, id: uid(), createdAt: action.date }] }
+    case 'removeReward':
+      return { ...state, rewards: (state.rewards ?? []).filter((r) => r.id !== action.id) }
+    case 'claimReward':
+      return { ...state, rewards: (state.rewards ?? []).map((r) => (r.id === action.id ? { ...r, claimedAt: action.date } : r)) }
+    case 'setJunkBaseline':
+      return { ...state, settings: { ...state.settings, junkBaselineWeekly: action.value } }
     case 'setDeficit':
       return { ...state, settings: { ...state.settings, dailyDeficit: action.deficit } }
     case 'setTheme':

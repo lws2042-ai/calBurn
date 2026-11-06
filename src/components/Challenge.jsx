@@ -2,6 +2,7 @@ import { ACHIEVEMENTS } from '../lib/game'
 import { unlockForAchievement } from '../lib/unlocks'
 import { fmtInt } from '../lib/format'
 import CalorieDefense from './CalorieDefense'
+import RealRewards from './RealRewards'
 
 export function LevelCard({ game, compact = false, onClick }) {
   const pct = (game.cur / game.need) * 100
@@ -85,7 +86,7 @@ function HonestyCard({ h }) {
   )
 }
 
-export default function Challenge({ game, state, analysis, dispatch }) {
+export default function Challenge({ game, state, analysis, dispatch, rr }) {
   const { got, progress } = game.achievements
   const hints = {
     streak7: `${progress.run}/7일`,
@@ -121,6 +122,8 @@ export default function Challenge({ game, state, analysis, dispatch }) {
           onFinish={(r) => dispatch({ type: 'gameResult', result: r, date: analysis.today })}
         />
       </section>
+
+      {rr && <RealRewards rr={rr} dispatch={dispatch} today={analysis.today} />}
 
       <HonestyCard h={game.honesty} />
 

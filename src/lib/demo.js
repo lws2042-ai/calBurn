@@ -168,7 +168,13 @@ export function buildDemoState(today, startDate = `${today.slice(0, 4)}-01-01`) 
   }
   // 예시: 내일 회식을 미리 등록 → 이번 주 남은 날 예산이 자동 재분배된다
   const plans = { [addDays(today, 1)]: { label: '회식', extraKcal: 1200 } }
-  return { version: 1, profile, entries, plans, game: { best: 2240, plays: 7, xp: 80 }, demo: year }
+  // 예시: 스스로 정한 현실 보상
+  const rewards = [
+    { id: 'r1', emoji: '👟', title: '새 러닝화', type: 'kg', target: 15, createdAt: startDate },
+    { id: 'r2', emoji: '👕', title: '운동복 한 벌', type: 'money', target: 30000, createdAt: startDate },
+    { id: 'r3', emoji: '✈️', title: '제주도 여행', type: 'goal', target: 0, createdAt: startDate },
+  ]
+  return { version: 1, profile, entries, plans, rewards, settings: { junkBaselineWeekly: 60000 }, game: { best: 2240, plays: 7, xp: 80 }, demo: year }
 }
 
 export const DEMO_PHASES = PHASES

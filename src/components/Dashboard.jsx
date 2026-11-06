@@ -7,14 +7,16 @@ import { LevelCard } from './Challenge'
 import WeightInsight from './WeightInsight'
 import AvatarCard from './AvatarCard'
 import ComebackBanner from './ComebackBanner'
+import { RealRewardStrip } from './RealRewards'
 import WeeklyBudget from './WeeklyBudget'
 
-export default function Dashboard({ analysis: a, game, profile, entries, state, dispatch, unlocked, onLog, onChallenge, onCustomize }) {
+export default function Dashboard({ analysis: a, game, profile, entries, state, dispatch, unlocked, rr, onRealRewards, onLog, onChallenge, onCustomize }) {
   const losing = a.goal < a.current
   return (
     <div className="stack">
       <ComebackBanner analysis={a} onLog={onLog} />
       <LevelCard game={game} compact onClick={onChallenge} />
+      {rr && <RealRewardStrip rr={rr} onOpen={onRealRewards} />}
 
       <div className="kpis">
         <BalanceKpi a={a} onLog={onLog} />
