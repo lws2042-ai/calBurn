@@ -5,6 +5,7 @@ import History from './components/History'
 import LogDay from './components/LogDay'
 import ProfileForm from './components/ProfileForm'
 import Settings from './components/Settings'
+import VoiceInput from './components/VoiceInput'
 import { addDays, todayISO } from './lib/dates'
 import { analyze } from './lib/engine'
 import { ACHIEVEMENTS, gamify } from './lib/game'
@@ -48,6 +49,18 @@ function Main({ state, dispatch, today }) {
     return TABS.some(([k]) => k === h) ? h : 'dashboard'
   })
   const [date, setDate] = useState(today)
+  const [voiceOpen, setVoiceOpen] = useState(false)
+  const [voiceMsg, setVoiceMsg] = useState(null)
+
+  // 🎤 음성으로 정리된 기록을 오늘 날짜에 한 번에 저장
+  function commitVoice({ weightKg, foods, exercises }) {
+    if (weightKg != null) dispatch({ type: 'setWeight', date: today, weightKg })
+    for (const food of foods) dispatch({ type: 'addFood', date: today, food })
+    for (const exercise of exercises) dispatch({ type: 'addExercise', date: today, exercise })
+    const parts = [weightKg != null && `체중 ${weightKg}kg`, foods.length && `음식 ${foods.length}개`, exercises.length && `운동 ${exercises.length}개`].filter(Boolean)
+    setVoiceMsg(`✅ ${parts.join(' · ')} 기록했어요`)
+    setTimeout(() => setVoiceMsg(null), 3000)
+  }
   const analysis = useMemo(() => analyze(state, today), [state, today])
   const game = useMemo(() => gamify(state, analysis), [state, analysis])
   const unlocked = useMemo(() => unlockedSet(game.achievements.got), [game])
@@ -113,6 +126,13 @@ function Main({ state, dispatch, today }) {
         {tab === 'history' && <History analysis={analysis} onOpen={openLog} />}
         {tab === 'settings' && <Settings state={state} dispatch={dispatch} analysis={analysis} today={today} unlocked={unlocked} />}
       </main>
+
+      {/* 🎤 어느 화면에서든 말로 기록 */}
+      <button className="voice-fab" onClick={() => setVoiceOpen(true)} aria-label="말로 기록">
+        🎤
+      </button>
+      <VoiceInput open={voiceOpen} onClose={() => setVoiceOpen(false)} weightKg={analysis.current} profile={state.profile} onCommit={commitVoice} />
+      {voiceMsg && <div className="toast">{voiceMsg}</div>}
 
       {fresh && (
         <button className="ach-toast" onClick={() => markSeen(fresh.id)}>
