@@ -1,0 +1,78 @@
+/* ─── 반응형 / 모바일 ─── */
+
+/* 그리드 항목이 내용 폭 때문에 화면 밖으로 밀려나지 않게 */
+.stack { grid-template-columns: minmax(0, 1fr); }
+.stack > *, .kpis > *, .grid-2 > *, .eta-grid > *, .stats > *, .fig, .content { min-width: 0; }
+html, body { overflow-x: hidden; }
+
+/* 크롭된 아바타(얼굴 확대·썸네일)는 틀 밖을 자른다 */
+.avatar--crop { overflow: hidden; }
+
+@media (max-width: 640px) {
+  .app { padding: 0 12px calc(72px + env(safe-area-inset-bottom)); }
+  .content { padding-top: 12px; }
+  .stack { gap: 10px; }
+  .panel { padding: 14px 12px; }
+
+  /* 상단 바: 로고만, 탭은 하단 고정 탭바 */
+  /* backdrop-filter 는 fixed 자식의 기준을 바꾸므로 모바일에서는 끈다 */
+  .topbar { padding: 10px 0; backdrop-filter: none; background: rgba(var(--bg-rgb), 0.96); }
+  .decomp__part { font-size: 0.64rem; }
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+    border: 0; border-top: 1px solid var(--line-strong); border-radius: 0;
+    background: rgba(var(--bg-rgb), 0.94); backdrop-filter: blur(10px);
+  }
+  .tab { padding: 12px 2px; font-size: 0.8rem; text-align: center; }
+
+  /* 입력 시 iOS 자동 확대 방지 */
+  input, select, textarea { font-size: 16px; }
+
+  /* 지표 */
+  .kpi__value { font-size: 1.9rem; }
+  .stat { padding: 12px; }
+  .stat__value { font-size: 1rem; }
+  .eta-val { font-size: 1.3rem; }
+  .level { gap: 10px; }
+  .level__badge { width: 48px; height: 48px; font-size: 1.25rem; }
+  .level__top { flex-wrap: wrap; gap: 4px; }
+
+  /* 아바타 카드: 3단을 좁게 */
+  .figs { gap: 0; }
+  .fig-arrow { font-size: 0.9rem; padding-bottom: 70px; }
+  .fig figcaption { padding-top: 6px; }
+  .bmi-chip { font-size: 0.6rem; padding: 1px 4px; white-space: normal; text-align: center; }
+  .fig__label { font-size: 0.7rem; }
+
+  /* 차트 */
+  .chart__head { gap: 6px; }
+  .legend { gap: 4px 10px; }
+  .weeks__row { gap: 3px; }
+  .wk { font-size: 0.62rem; }
+  .tip { min-width: 150px; font-size: 0.7rem; }
+
+  /* 기록 */
+  .summary__eq { font-size: 1.15rem; gap: 8px; }
+  .date-nav input[type='date'] { padding: 6px 8px; }
+  .choice { grid-template-columns: 64px 1fr auto; font-size: 0.82rem; }
+
+  /* 게임 */
+  .defense__stage { min-height: 420px; }
+  .defense__title { font-size: 1.4rem; }
+  .arrows { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* 알림이 하단 탭바를 가리지 않게 */
+  .ach-toast, .toast { bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .ach-toast { left: 12px; right: 12px; }
+
+  /* 꾸미기 */
+  .customizer__bodies .avatar { width: 92px; height: 172px; }
+  .thumbs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .themes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 380px) {
+  .tab { font-size: 0.74rem; }
+  .kpi__value { font-size: 1.7rem; }
+}

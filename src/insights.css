@@ -1,0 +1,45 @@
+/* ─── 먹기 전 의사결정 카드 ─── */
+.impact {
+  margin-top: 10px; padding: 10px 12px; display: grid; gap: 8px;
+  border: 1px solid var(--line-strong); border-left: 2px solid var(--accent); border-radius: var(--r-sm);
+  background: rgba(var(--accent-rgb), 0.05);
+}
+.impact--warn { border-left-color: var(--bad); background: var(--bad-soft); }
+.impact__title { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em; }
+.impact__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.impact__grid > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.impact__grid small { font-size: 0.7rem; color: var(--muted); }
+.impact__grid b { font-size: 1.05rem; color: var(--text); }
+.impact__grid span { font-size: 0.72rem; }
+.impact__balance { font-size: 0.8rem; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.impact__flag { font: 600 0.7rem var(--font); color: var(--bad); padding: 1px 6px; border: 1px solid var(--bad); border-radius: var(--r-sm); }
+
+/* ─── 수분 예보 ─── */
+.water {
+  margin-top: 10px; padding: 10px 12px; display: grid; gap: 6px;
+  border: 1px solid rgba(var(--info-rgb), 0.35); border-radius: var(--r-sm); background: rgba(var(--info-rgb), 0.06);
+}
+.water--up { border-color: rgba(var(--info-rgb), 0.7); background: rgba(var(--info-rgb), 0.12); }
+.water--down { border-color: rgba(var(--info-rgb), 0.5); }
+.water--muted { border-style: dashed; color: var(--muted); }
+.water__head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 0.88rem; }
+.water__head b { color: var(--info); }
+.water__rows { display: grid; gap: 3px; }
+.water__rows > div { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.water__val { margin-left: auto; color: var(--info); }
+.insight .water { margin-bottom: 4px; }
+
+/* ─── 히스토리 그래프 ─── */
+.chart .month-line { stroke: var(--line); stroke-dasharray: 2 4; }
+.chart .extreme { fill: var(--muted); font: 600 10px var(--mono); }
+.chart .bar-label { fill: var(--text); font: 600 10px var(--mono); }
+.chart .gap-line { stroke-width: 6; opacity: 0.25; stroke-linecap: round; }
+.chart .gap-line.good { stroke: var(--accent); }
+.chart .gap-line.bad { stroke: var(--bad); }
+.chart .intake-line { fill: none; stroke: var(--warn); stroke-width: 2; }
+.chart .expend-line { fill: none; stroke: var(--accent); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.6)); }
+.chart .intake-dot { fill: var(--warn); }
+.chart .expend-dot { fill: var(--accent); }
+.lg-intake::before { width: 14px; height: 2px; background: var(--warn); }
+.lg-expend::before { width: 14px; height: 2px; background: var(--accent); }
+.table tbody tr.no-click { cursor: default; }

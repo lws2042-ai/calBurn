@@ -1,0 +1,23 @@
+/* ─── 칼로리 디펜스 추가 요소 ─── */
+.defense__toolbar { display: flex; justify-content: flex-end; gap: 6px; }
+.defense__toolbar .btn { font-size: 0.8rem; }
+
+.defense__rules {
+  list-style: none; margin: 0; padding: 10px 14px; display: grid; gap: 6px; text-align: left; font-size: 0.85rem;
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: rgba(var(--bg-rgb), 0.6); max-width: 520px;
+}
+
+.defense__rank { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; }
+.rank {
+  display: inline-grid; place-items: center; min-width: 56px; height: 56px; padding: 0 8px;
+  font: 800 1.8rem var(--mono); border: 2px solid; border-radius: var(--r);
+}
+.rank--C { color: var(--muted); border-color: var(--muted); }
+.rank--B { color: var(--info); border-color: var(--info); }
+.rank--A { color: var(--accent); border-color: var(--accent); box-shadow: 0 0 14px -2px var(--accent); }
+.rank--S, .rank--SS { color: #f7c948; border-color: #f7c948; box-shadow: 0 0 20px -2px #f7c948; text-shadow: 0 0 12px rgba(247, 201, 72, 0.7); }
+.rank--SS { animation: rank-pulse 1.2s ease-in-out infinite; }
+@keyframes rank-pulse { 50% { box-shadow: 0 0 32px 2px #f7c948; } }
+
+.defense__stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 12px; }
+.defense__stats span { padding: 2px 8px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); }

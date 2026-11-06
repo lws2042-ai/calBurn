@@ -1,0 +1,50 @@
+/* ─── 주간 예산 ─── */
+.budget__sum { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0; color: var(--muted); }
+.budget__sum b { color: var(--text); }
+.budget__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.bday {
+  display: grid; gap: 2px; align-content: start; padding: 8px 6px; min-height: 92px; text-align: center;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: rgba(var(--accent-rgb), 0.02);
+}
+.bday.past { opacity: 0.6; }
+.bday.today { border-color: var(--accent); box-shadow: 0 0 12px -4px var(--accent); background: var(--accent-soft); }
+.bday.event { border-color: var(--warn); }
+.bday__dow { font-size: 0.75rem; font-weight: 600; }
+.bday__dow .muted { font-weight: 400; font-size: 0.68rem; }
+.bday__budget { font-size: 0.95rem; font-weight: 700; }
+.bday__intake { font-size: 0.72rem; }
+.bday__event {
+  font: 600 0.62rem var(--font); color: var(--warn); background: var(--warn-soft); cursor: pointer;
+  border: 1px solid rgba(242, 193, 78, 0.4); border-radius: var(--r-sm); padding: 2px 3px; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bday__event:disabled { cursor: default; }
+.budget__note { margin: 10px 0; line-height: 1.6; }
+.budget .btn.small-btn { margin-top: 4px; }
+
+.plan-form { display: grid; gap: 8px; padding: 10px; margin-top: 8px; border: 1px dashed var(--line-strong); border-radius: var(--r-sm); }
+select {
+  font: inherit; color: var(--text); background: var(--bg); padding: 8px 10px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+}
+
+@media (max-width: 640px) {
+  .budget__days { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bday { min-height: 84px; }
+}
+
+/* ─── 간편 3단계 기록 ─── */
+.quick { display: grid; gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.quick__btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.quick__btn { display: grid; gap: 2px; justify-items: center; padding: 10px 6px; }
+.quick__btn b { font-size: 0.95rem; }
+.quick__btn span { font-size: 0.75rem; }
+
+/* ─── 체중 저장 피드백 ─── */
+.weight-fb { margin-top: 10px; padding: 8px 10px; display: grid; gap: 2px; border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: var(--r-sm); font-size: 0.9rem; }
+.weight-fb--swing { border-left-color: var(--info); background: rgba(var(--info-rgb), 0.08); }
+
+/* ─── 복귀 환영 ─── */
+.comeback { border-color: var(--accent); box-shadow: var(--glow-strong); display: grid; gap: 8px; }
+.comeback__title { font-size: 1.05rem; font-weight: 700; color: var(--accent); text-shadow: var(--text-glow); }
+.comeback .btn { justify-self: start; }

@@ -1,0 +1,62 @@
+/* 색상 테마: <html data-theme="..."> 로 전환. 기본(neon)은 index.css :root */
+
+:root[data-theme='ocean'] {
+  --bg: #050a12; --bg-rgb: 5, 10, 18;
+  --panel: #0a1422; --panel-2: #0e1b2e; --line: #16283f; --line-strong: #21395a;
+  --text: #e0eefc; --muted: #7c92ab; --placeholder: #4b5f77;
+  --accent: #38bdf8; --accent-rgb: 56, 189, 248; --accent-2: #0ea5e9; --accent-hover: #67cdfa; --on-accent: #03121c;
+  --info: #a78bfa; --info-rgb: 167, 139, 250; --info-text: #ddd3ff;
+}
+
+:root[data-theme='violet'] {
+  --bg: #0a0712; --bg-rgb: 10, 7, 18;
+  --panel: #130e22; --panel-2: #19122d; --line: #2a2145; --line-strong: #3d2f66;
+  --text: #ece6ff; --muted: #9a8fbd; --placeholder: #5e5480;
+  --accent: #a78bfa; --accent-rgb: 167, 139, 250; --accent-2: #8b5cf6; --accent-hover: #c0aafc; --on-accent: #150a2c;
+}
+
+:root[data-theme='sunset'] {
+  --bg: #120a05; --bg-rgb: 18, 10, 5;
+  --panel: #1d120a; --panel-2: #26170c; --line: #3a2414; --line-strong: #57361c;
+  --text: #fdeee2; --muted: #b39580; --placeholder: #7a5d48;
+  --accent: #fb923c; --accent-rgb: 251, 146, 60; --accent-2: #f97316; --accent-hover: #fdac68; --on-accent: #2a1203;
+  --bad: #ff5c8a; --bad-soft: rgba(255, 92, 138, 0.12);
+  --warn: #facc15; --warn-soft: rgba(250, 204, 21, 0.12);
+}
+
+:root[data-theme='mono'] {
+  --bg: #08090a; --bg-rgb: 8, 9, 10;
+  --panel: #111214; --panel-2: #16181b; --line: #24272b; --line-strong: #363a40;
+  --text: #eceef0; --muted: #8b9198; --placeholder: #555b62;
+  --accent: #e8ecef; --accent-rgb: 232, 236, 239; --accent-2: #b8bec4; --accent-hover: #ffffff; --on-accent: #0b0c0d;
+  --text-glow: 0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f2f6f3; --bg-rgb: 242, 246, 243;
+  --bg-grad: radial-gradient(1200px 600px at 50% -200px, rgba(var(--accent-rgb), 0.08), transparent 70%);
+  --panel: #ffffff; --panel-2: #fbfdfc; --line: #dde8e1; --line-strong: #c2d6c9;
+  --text: #11221a; --muted: #5d7467; --placeholder: #9bb0a3;
+  --accent: #0f9d58; --accent-rgb: 15, 157, 88; --accent-2: #0b7a44; --accent-hover: #12b866; --on-accent: #ffffff;
+  --bad: #e03e3e; --bad-soft: rgba(224, 62, 62, 0.1);
+  --warn: #b77d00; --warn-soft: rgba(201, 138, 0, 0.12);
+  --info: #2563eb; --info-rgb: 37, 99, 235; --info-text: #1e3a8a;
+  --glow: 0 1px 2px rgba(16, 34, 26, 0.06), 0 0 0 1px rgba(var(--accent-rgb), 0.03);
+  --glow-strong: 0 0 0 1px rgba(var(--accent-rgb), 0.35), 0 4px 16px -6px rgba(var(--accent-rgb), 0.4);
+  --text-glow: none;
+}
+:root[data-theme='light'] input[type='date']::-webkit-calendar-picker-indicator { filter: none; }
+:root[data-theme='light'] .fig--start .fig__stage { background: radial-gradient(60% 50% at 50% 100%, rgba(0, 0, 0, 0.04), transparent 70%); }
+
+/* ─── 테마 선택 UI ─── */
+.themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.theme-card {
+  font: inherit; text-align: left; cursor: pointer; padding: 10px; display: grid; gap: 8px;
+  border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: transparent; color: var(--text);
+}
+.theme-card.on { border-color: var(--accent); box-shadow: var(--glow-strong); }
+.theme-card__swatch { height: 44px; border-radius: 2px; display: flex; align-items: flex-end; gap: 4px; padding: 6px; border: 1px solid rgba(127, 127, 127, 0.2); }
+.theme-card__swatch span { width: 14px; height: 14px; border-radius: 1px; }
+.theme-card__swatch .acc { width: 28px; }
+.theme-card__name { font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between; }

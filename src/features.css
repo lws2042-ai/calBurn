@@ -1,0 +1,150 @@
+/* 체중 차트 강화 · 체중 해석 · 게임화 · 칼로리 디펜스 */
+
+.hidden { display: none !important; }
+
+/* ─── 체중 차트 강화 ─── */
+.seg--sm button { padding: 5px 10px; font-size: 0.78rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 4px 0 8px; font-size: 0.76rem; color: var(--muted); }
+.lg { display: inline-flex; align-items: center; gap: 6px; }
+.lg::before { content: ''; display: inline-block; }
+.lg-trend::before { width: 14px; height: 2px; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.lg-dot-lo::before, .lg-dot-hi::before { width: 7px; height: 7px; border-radius: 50%; }
+.lg-dot-lo::before { background: var(--accent); }
+.lg-dot-hi::before { background: var(--bad); }
+.lg-toggle {
+  display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 0.76rem; cursor: pointer;
+  padding: 3px 8px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: transparent; color: var(--muted);
+}
+.lg-toggle::before { content: ''; display: inline-block; width: 14px; height: 8px; }
+.lg-toggle.on { color: var(--text); border-color: var(--accent); }
+.lg-band::before { background: rgba(var(--accent-rgb), 0.18); }
+.lg-ledger::before { height: 0; border-top: 2px dotted var(--info); }
+.lg-proj::before { height: 0; border-top: 2px dashed var(--accent); opacity: 0.7; }
+.lg-toggle:not(.on)::before { opacity: 0.25; }
+
+.wchart__plot { position: relative; }
+.chart .future-zone { fill: rgba(var(--accent-rgb), 0.025); }
+.chart .band { stroke: none; }
+.chart .ledger-line { fill: none; stroke: var(--info); stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; opacity: 0.9; }
+.chart .stem { stroke: var(--line-strong); stroke-width: 1; }
+.chart .dot.lo { fill: var(--accent); opacity: 0.9; }
+.chart .dot.hi { fill: var(--bad); opacity: 0.85; }
+.chart .proj-trend { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 6 5; opacity: 0.7; }
+.chart .milestone rect { fill: var(--bg); stroke: var(--accent); stroke-width: 1.5; }
+.chart .milestone text { fill: var(--accent); font: 600 10px var(--mono); }
+.chart .goal-hit circle { fill: var(--warn); }
+.chart .goal-hit text { fill: var(--warn); font: 600 11px var(--mono); }
+
+.tip {
+  position: absolute; top: 6px; transform: translateX(-50%); pointer-events: none; z-index: 2;
+  padding: 8px 10px; min-width: 170px; font: 0.76rem/1.5 var(--mono);
+  background: rgba(var(--bg-rgb), 0.95); border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+  box-shadow: 0 0 16px -4px rgba(var(--accent-rgb), 0.4);
+}
+.tip__date { color: var(--accent); margin-bottom: 2px; }
+.tip b { color: var(--text); }
+.chart-foot { margin-top: 8px; }
+
+.weeks { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.weeks__row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 8px; }
+.wk { text-align: center; font-size: 0.7rem; }
+.wk__bar { height: 40px; display: flex; align-items: flex-end; justify-content: center; background: rgba(var(--accent-rgb), 0.03); border-radius: 1px; margin-bottom: 4px; }
+.wk__bar span { width: 60%; min-height: 2px; border-radius: 1px 1px 0 0; }
+.wk.good .wk__bar span { background: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5); }
+.wk.bad .wk__bar span { background: var(--bad); }
+.wk.good .mono { color: var(--accent); }
+.wk.bad .mono { color: var(--bad); }
+
+/* ─── 체중 해석 ─── */
+.insight__head { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; }
+.zone-normal .insight__head { color: var(--accent); text-shadow: var(--text-glow); }
+.zone-high .insight__head { color: var(--warn); }
+.zone-low .insight__head { color: var(--info); }
+.insight__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.insight__grid > div { display: flex; flex-direction: column; padding: 8px 10px; background: rgba(var(--accent-rgb), 0.04); border: 1px solid var(--line); border-radius: var(--r-sm); }
+.insight__grid small { font: 0.72rem var(--font); color: var(--muted); }
+.insight__grid b { font-size: 1.05rem; }
+.insight__reason { margin-top: 10px; line-height: 1.6; }
+.insight .btn { margin-top: 10px; }
+.decomp { margin-top: 12px; display: grid; gap: 6px; }
+.decomp__bar { display: flex; height: 26px; gap: 2px; }
+.decomp__part { display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; white-space: nowrap; font: 600 0.72rem var(--mono); border-radius: 1px; }
+.decomp__part.fat { background: var(--accent); color: var(--on-accent); box-shadow: 0 0 10px -2px var(--accent); }
+.decomp__part.water { background: rgba(var(--info-rgb), 0.25); color: var(--info-text); border: 1px solid rgba(var(--info-rgb), 0.5); }
+@media (max-width: 520px) { .insight__grid { grid-template-columns: 1fr; } }
+
+/* ─── 레벨 / 스트릭 / 퀘스트 / 업적 ─── */
+.brand__lv { font-size: 0.7rem; padding: 2px 6px; margin-left: 6px; border: 1px solid var(--accent); color: var(--accent); border-radius: var(--r-sm); box-shadow: 0 0 8px -2px var(--accent); }
+.level { display: flex; gap: 14px; align-items: center; }
+.level[role="button"] { cursor: pointer; }
+.level[role="button"]:hover { border-color: var(--line-strong); box-shadow: var(--glow-strong); }
+.level__badge {
+  flex: none; width: 58px; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700; color: var(--accent); text-shadow: var(--text-glow);
+  border: 1px solid var(--accent); border-radius: var(--r); background: var(--accent-soft); box-shadow: 0 0 18px -4px var(--accent);
+}
+.level__badge small { font-size: 0.6rem; color: var(--muted); text-shadow: none; line-height: 1; }
+.level__body { flex: 1; min-width: 0; }
+.level__top { margin: 0 0 6px; }
+.level__sub { margin-top: 6px; }
+.xpbar { height: 8px; background: var(--line); border-radius: 1px; overflow: hidden; }
+.xpbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); box-shadow: 0 0 10px var(--accent); transition: width 0.6s; }
+.streak { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+.streak.on b { color: var(--warn); text-shadow: 0 0 10px rgba(242, 193, 78, 0.6); }
+.streak-warn { margin-top: 6px; color: var(--warn); }
+
+.quests { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.quests li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 9px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 0.9rem; }
+.quest__check { width: 18px; height: 18px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: var(--r-sm); font-size: 0.75rem; }
+.quests li.done { border-color: var(--line-strong); background: var(--accent-soft); }
+.quests li.done .quest__check { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: 0 0 8px var(--accent); }
+.quests li.done > span:nth-child(2) { color: var(--muted); text-decoration: line-through; }
+
+.achievements { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.ach { padding: 12px 10px; text-align: center; border: 1px solid var(--line); border-radius: var(--r-sm); opacity: 0.55; filter: grayscale(1); }
+.ach.on { opacity: 1; filter: none; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 14px -5px var(--accent); }
+.ach__icon { font-size: 1.6rem; }
+.ach__title { font-weight: 600; font-size: 0.85rem; margin-top: 4px; }
+.ach__desc { font-size: 0.72rem; margin-top: 2px; }
+.ach__meta { font-size: 0.68rem; margin-top: 6px; color: var(--muted); }
+.ach.on .ach__meta { color: var(--accent); }
+
+.ach-toast {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; gap: 12px; align-items: center; text-align: left;
+  font: inherit; color: var(--text); cursor: pointer; padding: 12px 16px; max-width: calc(100vw - 32px);
+  background: var(--panel-2); border: 1px solid var(--accent); border-radius: var(--r); box-shadow: var(--glow-strong);
+  animation: toast-in 0.35s ease-out;
+}
+.ach-toast > span:last-child { display: flex; flex-direction: column; }
+.ach-toast small { color: var(--accent); font-size: 0.7rem; letter-spacing: 0.08em; }
+.ach-toast__icon { font-size: 2rem; }
+@keyframes toast-in { from { transform: translateY(20px); opacity: 0; } }
+
+/* ─── 칼로리 디펜스 ─── */
+.defense { display: grid; gap: 10px; }
+.defense__stage {
+  position: relative; min-height: 460px; display: flex; justify-content: center;
+  background: radial-gradient(500px 300px at 50% 100%, rgba(var(--accent-rgb), 0.08), transparent 70%), var(--bg);
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm); overflow: hidden;
+}
+.defense canvas { display: block; touch-action: none; cursor: crosshair; }
+.defense__overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  padding: 24px; text-align: center; line-height: 1.6; background: rgba(var(--bg-rgb), 0.85);
+}
+.defense__title { font: 700 1.8rem var(--mono); letter-spacing: 0.06em; }
+.defense__score { font-size: 1.6rem; font-weight: 700; }
+.defense__lesson { margin: 4px 0 8px; padding: 10px 14px; border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: var(--r-sm); font-size: 0.9rem; }
+.badge-new { color: var(--warn); font-weight: 600; text-shadow: 0 0 10px rgba(242, 193, 78, 0.6); }
+
+.arrows { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.arrow {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; gap: 0 8px; text-align: left; align-items: center;
+  font: inherit; color: var(--text); cursor: pointer; padding: 8px 10px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: transparent;
+}
+.arrow__key { grid-row: span 2; width: 22px; height: 22px; display: grid; place-items: center; font-size: 0.75rem; border: 1px solid var(--line-strong); border-radius: var(--r-sm); color: var(--muted); }
+.arrow__label { font-size: 0.85rem; font-weight: 600; }
+.arrow__stat { font-size: 0.7rem; color: var(--muted); }
+.arrow.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 12px -4px var(--accent); }
+.arrow.on .arrow__key { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
