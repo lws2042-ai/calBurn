@@ -42,3 +42,45 @@
 
 /* 시작 화면: 캔버스가 숨겨져 있으므로 내용 길이만큼 늘어난다 (버튼이 잘리지 않게) */
 .defense__overlay--ready { position: relative; inset: auto; width: 100%; min-height: 460px; overflow: visible; }
+
+/* ─── 게임임을 한눈에: 배지 · 큰 제목 · 떨어지는 음식 · 반짝이는 시작 버튼 ─── */
+.game-panel { border-color: var(--line-strong); box-shadow: var(--glow-strong); }
+.defense__overlay--ready { overflow: hidden; }
+.hero-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.hero-rain span {
+  position: absolute; top: -40px; font-size: 1.6rem; opacity: 0.22;
+  animation: hero-fall linear infinite;
+}
+@keyframes hero-fall {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(620px) rotate(200deg); }
+}
+.defense__overlay--ready > :not(.hero-rain) { position: relative; z-index: 1; }
+
+.game-badge {
+  font: 700 0.72rem var(--mono); letter-spacing: 0.18em; padding: 4px 10px;
+  color: var(--on-accent); background: var(--accent); border-radius: var(--r-sm);
+  box-shadow: 0 0 16px -2px var(--accent);
+}
+.defense__title--hero { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: 0.08em; }
+.defense__tagline { font-size: 1.02rem; }
+.defense__best { font-size: 0.9rem; color: var(--warn); }
+
+.btn--play {
+  font: 800 1.25rem var(--font); letter-spacing: 0.04em; padding: 14px 44px; cursor: pointer;
+  color: var(--on-accent); background: var(--accent); border: 0; border-radius: var(--r);
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7), 0 0 24px -2px var(--accent);
+  animation: play-pulse 1.6s ease-out infinite;
+  transition: transform 0.12s;
+}
+.btn--play:hover { transform: scale(1.05); background: var(--accent-hover); }
+.btn--play:active { transform: scale(0.97); }
+.btn--play-sm { font-size: 1rem; padding: 10px 28px; animation: none; }
+@keyframes play-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.6), 0 0 24px -2px var(--accent); }
+  70% { box-shadow: 0 0 0 16px rgba(var(--accent-rgb), 0), 0 0 24px -2px var(--accent); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0), 0 0 24px -2px var(--accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rain span, .btn--play { animation: none; }
+}

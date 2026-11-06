@@ -15,7 +15,7 @@ import { useCalBurn } from './store/useCalBurn'
 const TABS = [
   ['dashboard', '대시보드'],
   ['log', '기록'],
-  ['challenge', '도전'],
+  ['challenge', '🎮 도전'],
   ['history', '히스토리'],
   ['settings', '설정'],
 ]

@@ -62,6 +62,22 @@ export default function Challenge({ game, state, analysis, dispatch }) {
     <div className="stack">
       <LevelCard game={game} />
 
+      {/* 미니게임을 맨 위에: 도전 탭을 열면 바로 게임이 보이게 */}
+      <section className="panel game-panel">
+        <div className="row between" style={{ marginTop: 0 }}>
+          <h2 style={{ margin: 0 }}>🎮 미니게임 · 칼로리 디펜스</h2>
+          <span className="muted small">내 식단·운동이 난이도에 반영됩니다</span>
+        </div>
+        <CalorieDefense
+          weightKg={analysis.current}
+          profile={state.profile}
+          best={state.game?.best ?? 0}
+          entries={state.entries}
+          today={analysis.today}
+          onFinish={(r) => dispatch({ type: 'gameResult', result: r, date: analysis.today })}
+        />
+      </section>
+
       <section className="panel">
         <h2>오늘의 퀘스트</h2>
         <ul className="quests">
@@ -93,18 +109,6 @@ export default function Challenge({ game, state, analysis, dispatch }) {
             </div>
           ))}
         </div>
-      </section>
-
-      <section className="panel">
-        <h2>미니게임 · 칼로리 디펜스</h2>
-        <CalorieDefense
-          weightKg={analysis.current}
-          profile={state.profile}
-          best={state.game?.best ?? 0}
-          entries={state.entries}
-          today={analysis.today}
-          onFinish={(r) => dispatch({ type: 'gameResult', result: r, date: analysis.today })}
-        />
       </section>
     </div>
   )

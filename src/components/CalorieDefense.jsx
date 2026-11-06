@@ -753,13 +753,27 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
         <canvas ref={canvasRef} className={phase === 'ready' ? 'hidden' : ''} />
         {phase === 'ready' && (
           <div className="defense__overlay defense__overlay--ready">
-            <div className="defense__title glow-text">칼로리 디펜스</div>
-            <p>
-              하늘에서 음식이 떨어집니다. 운동 화살로 칼로리를 태워 없애세요.
-              <br />
-              <span className="muted">
-                화살 데미지 = <b>당신의 체중({weightKg.toFixed(1)}kg)</b>으로 계산한 실제 소모 kcal · 재장전 = 실제 운동 시간
-              </span>
+            {/* 배경: 떨어지는 음식 (게임임을 한눈에) */}
+            <div className="hero-rain" aria-hidden="true">
+              {['🍗', '🍕', '🍩', '🍜', '🥤', '🍔', '🍰', '🍟', '🍺', '🍦'].map((e, i) => (
+                <span key={i} style={{ left: `${5 + i * 9.5}%`, animationDelay: `${(i * 0.73) % 4}s`, animationDuration: `${4 + (i % 3)}s` }}>
+                  {e}
+                </span>
+              ))}
+            </div>
+            <div className="game-badge">🎮 MINI GAME</div>
+            <div className="defense__title defense__title--hero glow-text">칼로리 디펜스</div>
+            <p className="defense__tagline">하늘에서 떨어지는 음식을 <b>운동 화살</b>로 태워 없애세요! 🏹</p>
+            <button className="btn btn--play" onClick={start}>
+              ▶ 게임 시작
+            </button>
+            {best > 0 && (
+              <div className="defense__best mono">
+                🏆 최고 기록 <b>{fmtInt(best)}</b>점
+              </div>
+            )}
+            <p className="muted small">
+              화살 데미지 = <b>당신의 체중({weightKg.toFixed(1)}kg)</b>으로 계산한 실제 소모 kcal · 재장전 = 실제 운동 시간
             </p>
             <DietCard diet={diet} training={training} fx={fxAll} />
             <ul className="defense__rules">
@@ -774,10 +788,9 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
               </li>
             </ul>
             <p className="muted small">마우스/터치로 조준 · 누르고 있으면 연사 · ←→ 이동, Space 발사, 1~6 화살, P 일시정지</p>
-            <button className="btn btn--primary" onClick={start}>
-              시작
+            <button className="btn btn--play btn--play-sm" onClick={start}>
+              ▶ 시작
             </button>
-            {best > 0 && <div className="muted small">최고 기록 {fmtInt(best)}점</div>}
           </div>
         )}
         {phase === 'over' && result && (
