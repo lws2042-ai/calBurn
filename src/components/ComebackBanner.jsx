@@ -16,14 +16,14 @@ export default function ComebackBanner({ analysis, onLog }) {
     <section className="panel comeback">
       <div className="comeback__title">👋 다시 오셨네요! {away}일 만이에요</div>
       <p className="small">
-        쉬는 날은 실패가 아닙니다. 기록은 그대로 남아 있고, 추세도 이어서 계산됩니다.
+        쉬어도 괜찮아요. 기록은 그대로예요.
         {moved != null && (
           <>
             {' '}
-            마지막 기록 이후 추세 예상 변화 <b className="mono">{fmtSigned(moved, 1)}kg</b>.
+            그동안 추세 <b className="mono">{fmtSigned(moved, 1)}kg</b>.
           </>
         )}{' '}
-        오늘 체중 한 번만 재 주세요. 정확한 추세로 바로 돌아옵니다.
+        오늘 체중만 재 주세요.
       </p>
       <button className="btn btn--primary small-btn" onClick={onLog}>
         오늘 체중 기록

@@ -250,7 +250,7 @@ export default function WeightChart({ analysis }) {
 
       <div className="chart-foot">
         <span className="muted small">
-          일상 변동폭 σ = <b className="mono">±{sigma.toFixed(2)} kg</b> — 이 범위 안의 오르내림은 지방이 아니라 수분입니다.
+          일상 변동폭 σ = <b className="mono">±{sigma.toFixed(2)} kg</b> — 이 안의 변동은 수분
         </span>
       </div>
 

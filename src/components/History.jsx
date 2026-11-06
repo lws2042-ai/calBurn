@@ -24,7 +24,7 @@ export default function History({ analysis, onOpen }) {
         <HistoryCharts analysis={analysis} />
       ) : (
         <section className="panel">
-          <p className="muted small">행을 누르면 해당 날짜를 수정할 수 있습니다.</p>
+          <p className="muted small">행을 누르면 수정</p>
           <div className="table-wrap">
             <table className="table mono">
               <thead>

@@ -113,7 +113,7 @@ function BalanceKpi({ a, onLog }) {
 }
 
 function RateKpi({ a, losing }) {
-  if (!a.rate) return <Kpi label="주간 변화 속도" value="—" sub="최근 14일 중 체중 3회 이상 기록 필요" />
+  if (!a.rate) return <Kpi label="주간 변화 속도" value="—" sub="체중 3회 기록 필요" />
   const pct = a.rate.pctPerWeek
   const tooFast = losing && -pct > SAFE_LOSS_PCT_PER_WEEK
   const onTrack = losing ? pct < 0 : pct > 0
@@ -172,12 +172,12 @@ function EtaCompare({ a }) {
       <h2>도달 예측 — 두 가지 방법</h2>
       <div className="eta-grid">
         <div>
-          <div className="muted small">에너지 모델 (섭취·운동 기록 기반)</div>
+          <div className="muted small">기록 기반</div>
           <div className="eta-val mono">{m.value}</div>
           <div className="muted small">{a.plan ? `평균 섭취 ${fmtInt(a.plan.intake)} · 운동 ${fmtInt(a.plan.exercise)} kcal/일` : m.sub}</div>
         </div>
         <div>
-          <div className="muted small">실측 추세 (체중 기울기 연장)</div>
+          <div className="muted small">체중 추세 기반</div>
           <div className="eta-val mono">{t.value}</div>
           <div className="muted small">{t.sub}</div>
         </div>
@@ -185,7 +185,7 @@ function EtaCompare({ a }) {
       {both && Math.abs(gap) > 0.3 && (
         <p className="note">
           두 예측이 {Math.round(Math.abs(gap) * 100)}% 차이납니다.{' '}
-          {gap > 0 ? '실제 감량이 기록보다 느립니다 → 섭취 기록 누락 가능성.' : '실제 감량이 기록보다 빠릅니다 → 초기 수분 손실이거나 섭취 과대 기록.'}
+          {gap > 0 ? '실제가 더 느림 → 기록 누락?' : '실제가 더 빠름 → 수분 손실?'}
         </p>
       )}
     </section>

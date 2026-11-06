@@ -50,12 +50,12 @@ export default function AvatarCustomizer({ profile, weightKg, onChange, unlocked
       </div>
 
       <div className="customizer__opts">
-        <Group label={`🎁 해금 아이템 ${UNLOCKS.filter((u) => unlocked.has(u.id)).length}/${UNLOCKS.length} — 업적을 달성하면 열립니다`}>
+        <Group label={`🎁 해금 아이템 ${UNLOCKS.filter((u) => unlocked.has(u.id)).length}/${UNLOCKS.length}`}>
           <div className="unlock-grid">
             {UNLOCKS.map((u) => {
               const on = unlocked.has(u.id)
               return (
-                <div key={u.id} className={on ? 'unlock on' : 'unlock'} title={on ? '해금됨 — 아래에서 착용할 수 있어요' : `업적 「${achTitle(u.achievement)}」 달성 시 해금`}>
+                <div key={u.id} className={on ? 'unlock on' : 'unlock'} title={on ? '해금됨' : `업적 「${achTitle(u.achievement)}」 달성 시 해금`}>
                   <div className="unlock__icon">{on ? u.icon : '🔒'}</div>
                   <div className="unlock__label">{u.label}</div>
                   <div className="unlock__cond">{on ? '해금됨' : achTitle(u.achievement)}</div>

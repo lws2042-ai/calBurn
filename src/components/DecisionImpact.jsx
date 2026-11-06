@@ -7,7 +7,7 @@ export default function DecisionImpact({ food, ctx }) {
   const r = impactOf(food, ctx)
   return (
     <div className={`impact ${r.flipsToSurplus ? 'impact--warn' : ''}`}>
-      <div className="impact__title">먹기 전에 — 이 선택의 비용</div>
+      <div className="impact__title">먹기 전 비용</div>
       <div className="impact__grid">
         <div>
           <small>태우려면</small>

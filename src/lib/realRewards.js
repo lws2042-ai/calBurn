@@ -72,9 +72,9 @@ export function healthGains(startWeight, current) {
     kneeTonsPerDay: (kneePerStep * STEPS_PER_DAY) / 1000,
     bpMmHg: Math.min(20, lossKg * BP_MMHG_PER_KG),
     thresholds: [
-      { pct: 5, label: '대사 개선 구간', desc: '인슐린 감수성·간 지방 개선이 시작되는 지점', reached: pct >= 5 },
-      { pct: 7, label: '당뇨 예방 구간', desc: '주 150분 운동과 함께면 당뇨 발생 위험 58% 감소', reached: pct >= 7 },
-      { pct: 10, label: '건강 대전환', desc: '혈압·혈당·수면무호흡 등 여러 지표가 뚜렷이 개선', reached: pct >= 10 },
+      { pct: 5, label: '대사 개선 구간', desc: '인슐린·간 지방 개선', reached: pct >= 5 },
+      { pct: 7, label: '당뇨 예방 구간', desc: '당뇨 위험 −58% (운동 병행)', reached: pct >= 7 },
+      { pct: 10, label: '건강 대전환', desc: '혈압·혈당 뚜렷한 개선', reached: pct >= 10 },
     ],
   }
 }

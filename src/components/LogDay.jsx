@@ -228,9 +228,9 @@ function WeightFeedback({ row, prevWeight, rate }) {
       <div className="muted small">
         {bigSwing
           ? change > 0
-            ? '하루 +0.5kg 이상은 대부분 수분·염분·장 내용물입니다. 어제 짜게 드셨나요? 추세만 보세요.'
-            : '하루 −0.5kg 이상은 대부분 수분입니다. 지방이 그만큼 빠진 건 아니에요. 추세만 보세요.'
-          : '하루 변동(수분·염분)을 걸러낸 추세가 진짜 변화입니다.'}
+            ? '+0.5kg↑는 대부분 수분이에요. 추세를 보세요.'
+            : '−0.5kg↓도 대부분 수분이에요. 추세를 보세요.'
+          : '추세가 진짜 변화예요.'}
       </div>
     </div>
   )
@@ -246,7 +246,7 @@ function QuickMeal({ usual, impactCtx, onAdd }) {
   ]
   return (
     <div className="quick">
-      <div className="muted small">빠르게 기록 — 하루 전체 기준, 대충이어도 체중이 보정해 줍니다</div>
+      <div className="muted small">빠른 기록 (하루 전체)</div>
       <div className="quick__btns">
         {levels.map(([label, kcal]) => (
           <button

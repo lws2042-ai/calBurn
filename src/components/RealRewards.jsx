@@ -29,7 +29,7 @@ export function RealRewardStrip({ rr, onOpen }) {
 export default function RealRewards({ rr, dispatch, today }) {
   return (
     <section className="panel real-rewards" id="real-rewards">
-      <h2>💎 현실 보상 — 앱 밖의 삶에 남는 것</h2>
+      <h2>💎 현실 보상</h2>
       <RewardContracts rewards={rr.rewards} dispatch={dispatch} today={today} />
       <PiggyBank sv={rr.sv} baseline={rr.baseline} dispatch={dispatch} />
       <HealthReport h={rr.health} />
@@ -50,7 +50,7 @@ function RewardContracts({ rewards, dispatch, today }) {
           </button>
         )}
       </div>
-      <p className="muted small">목표를 이루면 스스로에게 줄 선물을 미리 정해 두세요. 음식 대신 몸과 삶에 남는 것을 추천해요.</p>
+      <p className="muted small">목표 달성 시 나에게 줄 선물</p>
       {adding && (
         <RewardForm
           onAdd={(reward) => {
@@ -84,7 +84,7 @@ function RewardContracts({ rewards, dispatch, today }) {
                   <div className="small c-good">✓ {shortDate(r.claimedAt)}에 선물 받음</div>
                 ) : done ? (
                   <div className="row" style={{ marginTop: 6 }}>
-                    <span className="small contract__cheer">🎉 달성! 이제 스스로에게 선물하세요</span>
+                    <span className="small contract__cheer">🎉 달성! 선물하세요</span>
                     <button className="btn btn--primary small-btn" onClick={() => dispatch({ type: 'claimReward', id: r.id, date: today })}>
                       받았어요 ✓
                     </button>
@@ -184,10 +184,10 @@ function PiggyBank({ sv, baseline, dispatch }) {
           ))}
         </div>
       ) : (
-        <p className="muted small">음식을 메뉴 단위로 기록한 주부터 계산됩니다 (치킨·야식·술 등 해로운 음식의 대표 가격 기준).</p>
+        <p className="muted small">메뉴 단위 기록부터 계산돼요</p>
       )}
       <div className="small muted">
-        막대 = 그 주 야식·배달·술 지출 추정, 선 = 다이어트 전 평소 지출{' '}
+        막대 = 야식·술 지출 · 선 = 평소{' '}
         {edit ? (
           <span className="row" style={{ display: 'inline-flex', margin: 0 }}>
             ₩<input type="number" min="0" step="5000" value={val} onChange={(e) => setVal(e.target.value)} style={{ width: 110 }} aria-label="평소 주당 지출" />
@@ -207,7 +207,7 @@ function PiggyBank({ sv, baseline, dispatch }) {
           </button>
         )}
       </div>
-      <p className="small piggy__tip">💡 아낀 돈을 실제 적금·저축 계좌로 옮기면, 다이어트가 통장 잔고로 남습니다.</p>
+      <p className="small piggy__tip">💡 아낀 돈은 적금으로!</p>
     </div>
   )
 }
@@ -218,7 +218,7 @@ function HealthReport({ h }) {
     <div className="rr-block">
       <h3>🫀 몸이 실제로 좋아진 정도</h3>
       {h.lossKg <= 0 ? (
-        <p className="muted small">추세 체중이 줄기 시작하면 무릎·혈압·대사 지표 변화를 연구 수치로 보여드려요.</p>
+        <p className="muted small">감량이 시작되면 표시돼요</p>
       ) : (
         <>
           <div className="health__grid">
@@ -234,7 +234,7 @@ function HealthReport({ h }) {
               <b>
                 약 <span className="mono">−{h.bpMmHg.toFixed(0)} mmHg</span>
               </b>
-              <span className="muted">감량 1kg당 약 −1mmHg</span>
+              <span className="muted">1kg당 약 −1</span>
             </div>
             <div>
               <small>⚖️ 시작 대비 감량</small>
@@ -262,7 +262,7 @@ function HealthReport({ h }) {
         </>
       )}
       <p className="muted small">
-        연구 평균치이며 의학적 진단이 아닙니다. 근거: 무릎 하중 Messier 2005 · 혈압 Neter 2003 메타분석 · 당뇨 예방 DPP 2002 · 대사 개선 Magkos 2016.
+        * 연구 평균치 (진단 아님)
       </p>
     </div>
   )

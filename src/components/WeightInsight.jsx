@@ -49,10 +49,10 @@ export default function WeightInsight({ analysis, entries, onLog }) {
 
   const reason =
     zone === 'high'
-      ? '짠 음식, 늦은 식사, 탄수화물(글리코겐 1g당 수분 3g), 수면 부족, 근육통 회복 중 수분 저류가 흔한 원인입니다.'
+      ? '짠 음식·늦은 식사·수면 부족 때문일 수 있어요.'
       : zone === 'low'
-        ? '탈수, 공복 연장, 배변 직후 등 일시적 요인일 가능성이 큽니다. 추세선이 진짜 변화입니다.'
-        : `추세 대비 ${fmtSigned(dev, 2)} kg은 당신의 정상 변동 범위(±${(1.5 * sigma).toFixed(2)} kg, 1.5σ) 안입니다. 하루 숫자가 아니라 추세를 보세요.`
+        ? '탈수·공복 등 일시적 요인이에요.'
+        : `정상 범위(±${(1.5 * sigma).toFixed(2)}kg) 안이에요.`
 
   return (
     <section className={`panel insight zone-${zone}`}>
@@ -78,7 +78,7 @@ export default function WeightInsight({ analysis, entries, onLog }) {
 
       {fat != null && (
         <div className="decomp">
-          <div className="decomp__title muted small">어제→오늘 {fmtSigned(change, 2)} kg 분해 (에너지 보존 법칙)</div>
+          <div className="decomp__title muted small">어제→오늘 {fmtSigned(change, 2)}kg 분해</div>
           <div className="decomp__bar" aria-hidden="true">
             <DecompPart value={fat} total={Math.abs(fat) + Math.abs(water)} cls="decomp__part--fat" />
             <DecompPart value={water} total={Math.abs(fat) + Math.abs(water)} cls="decomp__part--water" />
@@ -90,10 +90,6 @@ export default function WeightInsight({ analysis, entries, onLog }) {
             <span>
               <i className="sw sw--water" /> 수분 등 <b className="mono">{fmtSigned(water * 1000)}g</b>
             </span>
-          </div>
-          <div className="muted small">
-            어제 밸런스 {fmtSigned(fat * 7700)} kcal → 지방이 변할 수 있는 최대치는 <b className="mono">{fmtSigned(fat * 1000)} g</b>. 나머지{' '}
-            <b className="mono">{fmtSigned(water * 1000)} g</b>은 수분·글리코겐·장 내용물입니다.
           </div>
         </div>
       )}

@@ -11,7 +11,7 @@ export default function WaterForecast({ entries, date }) {
   if (!water) {
     return (
       <div className="water water--muted small">
-        💧 나트륨 정보가 있는 음식이 적어 {next} 아침 수분 예측을 할 수 없습니다. 음식 검색으로 기록하면 계산됩니다.
+        💧 음식 검색으로 기록하면 {next} 아침 수분을 예측해요
       </div>
     )
   }
@@ -41,10 +41,10 @@ export default function WaterForecast({ entries, date }) {
       <p className="muted small">
         {big
           ? up
-            ? '짠 음식·탄수화물로 몸이 물을 붙잡습니다. 내일 체중이 올라도 지방이 아닙니다. 보통 2~3일 안에 빠집니다.'
-            : '평소보다 짜지 않거나 탄수화물이 적어 수분이 빠집니다. 내일 체중이 많이 내려가도 지방이 그만큼 빠진 것은 아닙니다.'
-          : '평소와 비슷해 수분 변화는 크지 않을 전망입니다.'}
-        {!baseline.personal && ' (평소 값은 기록이 쌓일 때까지 한국인 평균 사용)'}
+            ? '짠 음식으로 물이 차요. 올라도 지방 아님.'
+            : '수분이 빠져요. 지방 감소는 아니에요.'
+          : '평소와 비슷해요.'}
+        {!baseline.personal && ' (평소 = 한국인 평균)'}
       </p>
     </div>
   )

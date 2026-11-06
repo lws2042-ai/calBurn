@@ -225,7 +225,7 @@ function MonthlyEnergyChart({ months }) {
     return (
       <div ref={ref}>
         <h2>월 평균 섭취 vs 소모</h2>
-        <p className="muted small">두 달 이상 기록이 쌓이면 표시됩니다.</p>
+        <p className="muted small">두 달 기록 후 표시</p>
       </div>
     )
   }

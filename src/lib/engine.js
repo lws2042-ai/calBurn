@@ -16,7 +16,6 @@ import {
   WINDOW_DAYS,
 } from './constants.js'
 import { addDays, diffDays } from './dates.js'
-const fmtKg = (v) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2)
 import { equilibriumWeight, simulateToGoal, trendEta } from './projection.js'
 import { buildSeries } from './series.js'
 import { clamp, linearRegression, mean, sum } from './stats.js'
@@ -133,23 +132,23 @@ function buildWarnings({ profile, current, goal, rate, meanIntake, intakeVals, b
   if (loggedDays < MIN_OBS_INTAKE_DAYS) {
     w.push({
       level: 'info',
-      text: `데이터 수집 중 (섭취 기록 ${loggedDays}/${MIN_OBS_INTAKE_DAYS}일). 지금은 공식 기반 추정이며, 기록이 쌓이면 실측 체중으로 자동 보정됩니다.`,
+      text: `데이터 수집 중 (${loggedDays}/${MIN_OBS_INTAKE_DAYS}일) — 지금은 공식 추정`,
     })
   }
 
   if (rate && losing && -rate.pctPerWeek > SAFE_LOSS_PCT_PER_WEEK) {
     w.push({
       level: 'danger',
-      text: `감량 속도 주 ${(-rate.pctPerWeek).toFixed(1)}% — 안전 상한(주 ${SAFE_LOSS_PCT_PER_WEEK}%) 초과. 근손실·대사 적응 위험이 커집니다. (시작 1~2주는 수분·글리코겐 손실로 과장될 수 있음)`,
+      text: `감량 속도 주 ${(-rate.pctPerWeek).toFixed(1)}% — 안전 상한 ${SAFE_LOSS_PCT_PER_WEEK}% 초과 (근손실 위험)`,
     })
   }
 
   if (intakeVals.length >= 3) {
     const floor = MIN_SAFE_INTAKE[profile.sex] ?? 1200
     if (meanIntake < floor) {
-      w.push({ level: 'danger', text: `최근 평균 섭취 ${Math.round(meanIntake)} kcal — 권장 최저선 ${floor} kcal 미만입니다.` })
+      w.push({ level: 'danger', text: `평균 섭취 ${Math.round(meanIntake)}kcal — 최저선 ${floor} 미만` })
     } else if (meanIntake < bmrNow) {
-      w.push({ level: 'warn', text: `최근 평균 섭취 ${Math.round(meanIntake)} kcal가 기초대사량 ${Math.round(bmrNow)} kcal보다 낮습니다.` })
+      w.push({ level: 'warn', text: `평균 섭취 ${Math.round(meanIntake)}kcal < 기초대사량 ${Math.round(bmrNow)}` })
     }
   }
 
@@ -159,8 +158,8 @@ function buildWarnings({ profile, current, goal, rate, meanIntake, intakeVals, b
       level: 'info',
       text:
         pct > 0
-          ? `실측 소모량이 공식보다 ${pct}% 높습니다 → 섭취 기록 누락(간식·음료·소스) 가능성이 큽니다.`
-          : `실측 소모량이 공식보다 ${-pct}% 낮습니다 → 활동계수를 낮추거나 섭취량을 재확인하세요.`,
+          ? `실측 소모가 공식보다 ${pct}% 높음 → 기록 누락?`
+          : `실측 소모가 공식보다 ${-pct}% 낮음 → 활동계수 확인`,
     })
   }
 
@@ -169,24 +168,24 @@ function buildWarnings({ profile, current, goal, rate, meanIntake, intakeVals, b
     const deficit = intakeVals.length >= 3 && observed ? observed.tdee - meanIntake : null
     let why
     if (observed && observed.deviation < -0.1) {
-      why = `실측 소모량이 공식보다 ${Math.round(-observed.deviation * 100)}% 낮습니다 → 대사 적응 가능성. 1~2주 유지 칼로리로 쉬어가는 "다이어트 브레이크"나 걷기 늘리기가 도움이 됩니다.`
+      why = `실측 소모 ${Math.round(-observed.deviation * 100)}% 낮음 → 대사 적응? 1~2주 유지식 추천`
     } else if (deficit != null && deficit > 200) {
-      why = '기록상으로는 적자인데 체중이 그대로입니다 → 간식·음료·소스 기록 누락이나 수분 저류(짠 음식, 운동 회복, 생리 주기)일 가능성이 큽니다. 지방은 빠지고 있을 수 있어요.'
+      why = '기록상 적자인데 그대로 → 기록 누락·수분?'
     } else {
-      why = '실제 적자가 거의 없습니다 → 하루 100~200 kcal만 줄이거나 주 2회 걷기를 더하면 다시 움직입니다.'
+      why = '적자가 거의 없음 → 하루 100~200kcal 줄이기'
     }
-    w.push({ level: 'info', text: `정체기 (2주간 주 ${fmtKg(rate.kgPerWeek)}kg): 정상적인 과정입니다. ${why}` })
+    w.push({ level: 'info', text: `정체기: ${why}` })
   }
 
   if (model?.status === 'plateau' && equilibrium != null) {
     w.push({
       level: 'warn',
-      text: `현재 습관을 유지하면 체중은 약 ${equilibrium.toFixed(1)} kg에서 멈춥니다 (체중이 줄수록 소모량도 줄기 때문). 목표에 가려면 섭취를 줄이거나 운동을 늘려야 합니다.`,
+      text: `이 습관이면 ${equilibrium.toFixed(1)}kg에서 멈춰요 → 섭취↓·운동↑`,
     })
   }
 
   if (model?.status === 'wrong') {
-    w.push({ level: 'warn', text: `최근 평균 기준으로 에너지 ${losing ? '흑자' : '적자'} 상태입니다. 현재 패턴으로는 목표 반대 방향으로 갑니다.` })
+    w.push({ level: 'warn', text: `최근 ${losing ? '흑자' : '적자'} — 목표 반대 방향이에요` })
   }
 
   return w

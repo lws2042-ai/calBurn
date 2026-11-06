@@ -19,7 +19,7 @@ export function LevelCard({ game, compact = false, onClick }) {
             {game.title} <span className="muted small mono">{fmtInt(game.xp)} XP</span>
           </strong>
           <span className={`streak ${game.streak.current ? 'on' : ''}`} title={`최고 ${game.streak.best}일 · 이틀까지는 쉬어도 유지`}>
-            🔥 <b className="mono">{game.streak.current}</b>일 기록 <span className="muted">(2일 휴식 허용)</span>
+            🔥 <b className="mono">{game.streak.current}</b>일 기록 <span className="muted">(2일 휴식 OK)</span>
           </span>
         </div>
         <div className="xpbar">
@@ -60,28 +60,28 @@ function HonestyCard({ h }) {
         {h.score != null && <span className="honesty__score mono">{Math.round(h.score * 100)}%</span>}
       </div>
       {h.score == null ? (
-        <p className="muted small">기록이 4주 이상 쌓이면 시작됩니다. 2주 전까지의 데이터로 알아낸 내 소모량으로, 그 뒤 2주의 기록이 체중을 얼마나 정확히 예측하는지 검증합니다.</p>
+        <p className="muted small">4주 기록 후 시작돼요. 기록이 2주 뒤 체중을 맞히는지 검증해요.</p>
       ) : h.reason === 'few-logs' ? (
-        <p className="muted small">최근 14일 중 {h.logged}일만 기록했어요. 10일 이상 기록해야 검증할 수 있습니다.</p>
+        <p className="muted small">최근 14일 중 {h.logged}일 기록 · 10일 이상 필요</p>
       ) : (
         <>
-          <div className="honesty__bars mono small">
+          <div className="honesty__bars small">
             <span>
-              기록으로 예측한 변화 <b>{h.predictedKg >= 0 ? '+' : '−'}{Math.abs(h.predictedKg).toFixed(2)}kg</b>
+              예측 <b className="mono">{h.predictedKg >= 0 ? '+' : '−'}{Math.abs(h.predictedKg).toFixed(2)}kg</b>
             </span>
             <span>
-              체중계가 말한 실제 변화 <b>{h.actualKg >= 0 ? '+' : '−'}{Math.abs(h.actualKg).toFixed(2)}kg</b>
+              실제 <b className="mono">{h.actualKg >= 0 ? '+' : '−'}{Math.abs(h.actualKg).toFixed(2)}kg</b>
             </span>
-            <span className="muted">하루 평균 오차 {fmtInt(h.errKcalPerDay)} kcal</span>
+            <span className="muted">오차/일 {fmtInt(h.errKcalPerDay)} kcal</span>
           </div>
           <p className="small">
             {h.honestNow
-              ? `✅ 기록이 체중을 정확히 예측합니다. 오늘 XP ×${h.mult} 보너스 적용 중! (누적 보너스 +${fmtInt(h.bonusXp)} XP)`
-              : '기록과 체중이 어긋납니다. 간식·음료·소스를 빠짐없이, 평소처럼 일관되게 적으면 정확도가 올라갑니다.'}
+              ? `✅ 정확해요! XP ×${h.mult} 적용 중 (누적 +${fmtInt(h.bonusXp)} XP)`
+              : '간식·음료까지 빠짐없이 적으면 올라가요.'}
           </p>
         </>
       )}
-      <p className="muted small">체중계는 속일 수 없어서, 이 보너스는 꾸준하고 일관되게 기록할 때만 받을 수 있습니다.</p>
+      <p className="muted small">70% 이상이면 XP ×1.2</p>
     </section>
   )
 }
@@ -111,7 +111,7 @@ export default function Challenge({ game, state, analysis, dispatch, rr }) {
       <section className="panel game-panel">
         <div className="row between" style={{ marginTop: 0 }}>
           <h2 style={{ margin: 0 }}>🎮 미니게임 · 칼로리 디펜스</h2>
-          <span className="muted small">내 식단·운동이 난이도에 반영됩니다</span>
+          <span className="muted small">식단·운동이 난이도에 반영</span>
         </div>
         <CalorieDefense
           weightKg={analysis.current}
@@ -138,7 +138,7 @@ export default function Challenge({ game, state, analysis, dispatch, rr }) {
             </li>
           ))}
         </ul>
-        <p className="muted small">보상은 체중이 아니라 행동에 줍니다. 1,000 kcal 넘는 적자나 최저 섭취선 아래는 XP가 없습니다.</p>
+        <p className="muted small">굶기(−1,000kcal↓)는 XP 없음</p>
       </section>
 
       <section className="panel">

@@ -39,7 +39,7 @@ export default function Settings({ state, dispatch, analysis, today, unlocked })
     const what = n ? `현재 데이터(${n}일)를 덮어씁니다` : '채웁니다'
     if (!window.confirm(`올해 1월 1일 ~ 오늘까지의 샘플 기록으로 ${what}. 계속할까요?`)) return
     dispatch({ type: 'replace', state: buildDemoState(today) })
-    setMsg('샘플 데이터를 불러왔습니다. 히스토리 탭에서 그래프를 확인하세요.')
+    setMsg('샘플 데이터를 불러왔어요.')
   }
 
   function reset() {
@@ -88,7 +88,7 @@ export default function Settings({ state, dispatch, analysis, today, unlocked })
 
       <section className="panel">
         <h2>데이터</h2>
-        <p className="muted small">기록은 이 브라우저에만 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지우기 전에 백업하세요.</p>
+        <p className="muted small">이 브라우저에만 저장돼요. 백업해 두세요.</p>
         <div className="row">
           <button className="btn" onClick={exportJson}>
             백업 내보내기 (JSON)

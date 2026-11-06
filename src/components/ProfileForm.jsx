@@ -87,7 +87,7 @@ export default function ProfileForm({ initial, onSubmit, submitLabel = '저장',
       <AvatarPreview look={initial?.avatar} sex={f.sex} heightCm={Number(f.heightCm)} weightKg={Number(f.startWeightKg)} goalKg={Number(f.goalWeightKg)} />
 
       <div className="field">
-        <label>일상 활동 수준 <span className="muted">(운동 제외 — 운동은 따로 기록)</span></label>
+        <label>일상 활동 수준 <span className="muted">(운동 제외)</span></label>
         <div className="choice-list">
           {ACTIVITY_LEVELS.map((a) => (
             <button
@@ -106,7 +106,7 @@ export default function ProfileForm({ initial, onSubmit, submitLabel = '저장',
 
       <div className="field">
         <label htmlFor="wc">
-          워치 kcal 보정계수 <span className="muted">(직접 입력한 운동 kcal에 곱함. 워치는 보통 과대추정)</span>
+          워치 kcal 보정계수 <span className="muted">(워치 kcal × 이 값)</span>
         </label>
         <input id="wc" type="number" step="0.05" inputMode="decimal" value={f.watchCorrection} onChange={set('watchCorrection')} />
       </div>
@@ -125,7 +125,7 @@ function AvatarPreview({ look, sex, heightCm, weightKg, goalKg }) {
   const okW = weightKg >= 30 && weightKg <= 300
   const okG = goalKg >= 30 && goalKg <= 300
   if (!okH || !okW) {
-    return <div className="avatar-preview avatar-preview--empty muted small">키와 체중을 입력하면 나만의 아바타가 생성됩니다</div>
+    return <div className="avatar-preview avatar-preview--empty muted small">키·체중을 넣으면 아바타가 생겨요</div>
   }
   const healthy = healthyWeightRange(heightCm)
   const item = (label, w, variant) => {

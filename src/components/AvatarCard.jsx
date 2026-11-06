@@ -75,7 +75,7 @@ export default function AvatarCard({ analysis, profile, onCustomize, unlocked = 
 
       <div className="preview">
         <label className="muted small" htmlFor="pv">
-          미래 미리보기 — 현재 습관을 유지하면
+          미래 미리보기
         </label>
         <input
           id="pv"
@@ -100,7 +100,7 @@ export default function AvatarCard({ analysis, profile, onCustomize, unlocked = 
         <span>진행률 {Math.round(analysis.progress * 100)}%</span>
         <span className="mono">{goal} kg</span>
       </div>
-      <p className="muted small">시작·목표 아바타는 변화를 체감하도록 체형 차이를 강조해 표현합니다.</p>
+      <p className="muted small">* 시작·목표 체형은 강조 표현</p>
     </section>
   )
 }

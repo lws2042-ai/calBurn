@@ -94,12 +94,12 @@ export default function WeeklyBudget({ state, analysis, dispatch }) {
           {futureEvents.length > 0 && (
             <span className="muted">
               {' '}
-              — 등록한 {futureEvents.map((d) => `${weekday(d.date)} ${d.plan.label}`).join(', ')} 때문에 다른 날이 하루 약 {fmtInt(perDayCut)}kcal씩 나눠 부담합니다. 회식 날은 실패가 아니라 계획입니다.
+              — {futureEvents.map((d) => `${weekday(d.date)} ${d.plan.label}`).join(', ')} 대비 다른 날 −{fmtInt(perDayCut)}kcal
             </span>
           )}
         </p>
       )}
-      {b.floorHit && <p className="small c-bad">⚠ 남은 날 예산이 안전 최저선({fmtInt(b.floor)} kcal)보다 낮아집니다. 이번 주는 목표 적자를 줄이고 다음 주에 이어가세요.</p>}
+      {b.floorHit && <p className="small c-bad">⚠ 최저선({fmtInt(b.floor)}kcal) 아래 — 목표 적자를 줄이세요</p>}
 
       <CouponBar avail={avail} total={coupons.length} weekMean={weekMean} need={need} logged={weekRows.length} today={analysis.today} end={b.end} plans={plans}
         onUse={(coupon, date) => dispatch({ type: 'useCoupon', coupon, date })} />
@@ -190,7 +190,7 @@ function CouponBar({ avail, total, weekMean, need, logged, today, end, plans, on
           </button>
         )}
       </div>
-      {avail.length > 0 && <div className="muted small">가장 빨리 만료: {shortDate(avail[0].expires)}까지 · 쓴 날은 예산이 늘고 다른 날은 깎이지 않아요</div>}
+      {avail.length > 0 && <div className="muted small">{shortDate(avail[0].expires)}까지 사용</div>}
       {using && (
         <div className="row">
           <select value={date} onChange={(e) => setDate(e.target.value)} aria-label="쿠폰 쓸 날">
@@ -215,10 +215,9 @@ function CouponBar({ avail, total, weekMean, need, logged, today, end, plans, on
         </div>
       )}
       <div className="small coupon__progress">
-        이번 주 쿠폰 도전: 평균 밸런스{' '}
-        <b className={`mono ${onTrack ? 'c-good' : 'c-bad'}`}>{weekMean == null ? '—' : fmtSigned(weekMean)}</b> / 목표 {fmtSigned(need)} 이하
-        <span className="muted"> · 기록 {logged}/5일 이상</span>
-        {onTrack && logged >= 5 ? <span className="c-good"> → 이대로면 다음 주 월요일 쿠폰 획득!</span> : null}
+        이번 주 <b className={`mono ${onTrack ? 'c-good' : 'c-bad'}`}>{weekMean == null ? '—' : fmtSigned(weekMean)}</b> / 목표 {fmtSigned(need)}
+        <span className="muted"> · 기록 {logged}/5</span>
+        {onTrack && logged >= 5 ? <span className="c-good"> → 쿠폰 획득 예정!</span> : null}
       </div>
     </div>
   )

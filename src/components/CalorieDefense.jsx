@@ -773,21 +773,21 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
               </div>
             )}
             <p className="muted small">
-              화살 데미지 = <b>당신의 체중({weightKg.toFixed(1)}kg)</b>으로 계산한 실제 소모 kcal · 재장전 = 실제 운동 시간
+              화살 = 내 체중({weightKg.toFixed(1)}kg) 기준 실제 소모 kcal
             </p>
             <DietCard diet={diet} training={training} fx={fxAll} />
             <ul className="defense__rules">
               <li>
-                <b>🔥 콤보</b> 놓치지 않고 연속 처치 → 점수 최대 ×3, <b>10콤보</b>면 <b>애프터번 피버</b>(관통·연사)
+                <b>🔥 콤보</b> 최대 ×3 · <b>10콤보</b>면 <b>애프터번 피버</b>(관통·연사)
               </li>
               <li>
-                <b>🥦 건강 음식</b>은 쏘지 마세요! 먹으면 보너스, 3개마다 💓+1
+                <b>🥦 건강 음식</b>은 쏘지 말기 (먹으면 보너스)
               </li>
               <li>
-                <b>💧🛡️💓 아이템</b>은 쏴서 획득 · <b>👹 보스</b>는 3웨이브마다 (놓치면 💔💔)
+                <b>💧🛡️💓 아이템</b>은 쏴서 획득 · <b>👹 보스</b>는 3웨이브마다
               </li>
             </ul>
-            <p className="muted small">마우스/터치로 조준 · 누르고 있으면 연사 · ←→ 이동, Space 발사, 1~6 화살, P 일시정지</p>
+            <p className="muted small">조준: 마우스·터치 · 연사: 꾹 누르기 · P 일시정지</p>
           </div>
         )}
         {phase === 'over' && result && (
@@ -810,7 +810,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
             <div className="defense__lesson">
               태운 {fmtInt(result.burned)} kcal = 지방 {fmtInt((result.burned / 7700) * 1000)}g = 현실에서 <b>러닝 {runKmFor(result.burned, weightKg).toFixed(1)}km</b>
               <br />
-              <span className="muted">먹는 건 몇 초, 태우는 건 몇 시간. 가장 강한 화살은 애초에 먹지 않는 것입니다.</span>
+              <span className="muted">먹는 건 몇 초, 태우는 건 몇 시간.</span>
             </div>
             <button className="btn btn--primary" onClick={start}>
               다시 하기
@@ -831,7 +831,7 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
         ))}
       </div>
       <p className="muted small">
-        화력(DPS) = 분당 소모 kcal. 같은 시간이면 강도가 높은 운동이 더 강합니다. 큰 화살은 재장전이 길어 작은 음식엔 화력이 낭비됩니다.
+        화력 = 분당 소모 kcal
       </p>
     </div>
   )
@@ -839,33 +839,31 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
 
 /** 시작 화면: 내 식단 컨디션과 게임 효과 */
 function DietCard({ diet, training, fx }) {
-  const { tier, counts, top, pool } = diet
+  const { tier, counts, pool } = diet
   const tone = { clean: 'good', good: 'good', normal: 'neutral', greasy: 'bad', junk: 'bad', none: 'neutral' }[tier.id]
   return (
     <div className={`diet-card diet-card--${tone}`}>
       <div className="diet-card__head">
-        <b>최근 7일 식단 컨디션: {tier.label}</b>
+        <b>식단 (7일): {tier.label}</b>
       </div>
       <div className="diet-card__fx">{tier.desc}</div>
       {tier.id !== 'none' && (
         <div className="diet-card__counts small">
           <span className="c-good">건강 {counts.healthy}</span> · <span className="c-bad">해로움 {counts.harmful}</span> · <span className="muted">중립 {counts.neutral}</span>
-          {top.harmful.length > 0 && <span className="muted"> — 주범: {top.harmful.join(', ')}</span>}
-          {top.healthy.length > 0 && <span className="muted"> — 잘한 선택: {top.healthy.join(', ')}</span>}
         </div>
       )}
-      {pool.length > 0 && <div className="muted small">내가 먹은 음식 {pool.length}종이 하늘에서 떨어집니다 (금색 테두리 = 내 기록)</div>}
+      {pool.length > 0 && <div className="muted small">내가 먹은 음식 {pool.length}종 등장 (금테 = 내 기록)</div>}
 
       <div className="diet-card__sep" />
       <div className="diet-card__head">
         <b>
-          최근 7일 운동: {training.tier.label} <span className="mono muted">({training.kcal.toLocaleString()} kcal · {training.sessions}회)</span>
+          운동 (7일): {training.tier.label} <span className="mono muted">({training.kcal.toLocaleString()} kcal · {training.sessions}회)</span>
         </b>
       </div>
       <div className={`diet-card__fx ${training.tier.dmgMult > 1 ? 'c-good' : 'muted'}`}>{training.tier.desc}</div>
       {training.next && (
         <div className="muted small">
-          {training.next.label}까지 {(training.next.min - training.kcal).toLocaleString()} kcal 더 → {training.next.desc}
+          {(training.next.min - training.kcal).toLocaleString()}kcal 더 → {training.next.label}
         </div>
       )}
 
