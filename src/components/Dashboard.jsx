@@ -6,6 +6,7 @@ import WeightChart from './charts/WeightChart'
 import { LevelCard } from './Challenge'
 import WeightInsight from './WeightInsight'
 import AvatarCard from './AvatarCard'
+import PeerCompare from './PeerCompare'
 import ComebackBanner from './ComebackBanner'
 import { RealRewardStrip } from './RealRewards'
 import WeeklyBudget from './WeeklyBudget'
@@ -48,6 +49,8 @@ export default function Dashboard({ analysis: a, game, profile, entries, state, 
       {state && <WeeklyBudget state={state} analysis={a} dispatch={dispatch} />}
 
       <AvatarCard analysis={a} profile={profile} unlocked={unlocked} onCustomize={onCustomize} />
+
+      <PeerCompare analysis={a} profile={profile} />
 
       <WeightInsight analysis={a} entries={entries} onLog={onLog} />
 
