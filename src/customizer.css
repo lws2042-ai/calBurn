@@ -32,3 +32,20 @@
   border: 2px solid var(--panel); outline: 1px solid var(--line-strong);
 }
 .swatch.on { outline: 2px solid var(--accent); box-shadow: 0 0 10px -2px var(--accent); }
+
+/* ─── 해금 아이템 ─── */
+.av-sparkles--gold path { fill: #f7c948; filter: drop-shadow(0 0 5px #f7c948); }
+.chip.locked { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+.unlock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+.unlock {
+  display: grid; justify-items: center; gap: 2px; padding: 8px 6px; text-align: center;
+  border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 0.75rem;
+}
+.unlock__icon { font-size: 1.5rem; }
+.unlock__label { font-weight: 600; }
+.unlock__cond { color: var(--muted); font-size: 0.68rem; }
+.unlock.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 10px -4px var(--accent); }
+.unlock.on .unlock__cond { color: var(--accent); }
+.unlock:not(.on) { filter: grayscale(1); opacity: 0.6; }
+.ach__reward { font-size: 0.68rem; margin-top: 4px; color: var(--warn); }
+.ach-toast .reward { color: var(--warn); font-size: 0.8rem; }

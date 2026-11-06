@@ -7,7 +7,7 @@ import ThemePicker from './ThemePicker'
 import { themeFromSettings } from '../lib/themes'
 import { buildDemoState } from '../lib/demo'
 
-export default function Settings({ state, dispatch, analysis, today }) {
+export default function Settings({ state, dispatch, analysis, today, unlocked }) {
   const fileRef = useRef(null)
   const [msg, setMsg] = useState(null)
 
@@ -56,7 +56,7 @@ export default function Settings({ state, dispatch, analysis, today }) {
 
       <section className="panel" id="avatar">
         <h2>아바타 꾸미기</h2>
-        <AvatarCustomizer profile={state.profile} weightKg={analysis.current} onChange={(look) => dispatch({ type: 'setLook', look })} />
+        <AvatarCustomizer profile={state.profile} weightKg={analysis.current} unlocked={unlocked} onChange={(look) => dispatch({ type: 'setLook', look })} />
       </section>
 
       <section className="panel">

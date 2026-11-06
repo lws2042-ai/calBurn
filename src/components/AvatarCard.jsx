@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { bmi, bmiClass, healthyWeightRange } from '../lib/bmi'
 import { addDays } from '../lib/dates'
+import { sanitizeLook } from '../lib/unlocks'
 import Avatar from './Avatar'
 
 /** 시작 → 현재 → 목표 변신 카드 + 미래 미리보기 슬라이더 */
-export default function AvatarCard({ analysis, profile, onCustomize }) {
+export default function AvatarCard({ analysis, profile, onCustomize, unlocked = new Set() }) {
+  const look = sanitizeLook(profile.avatar, unlocked)
   const { startWeight, current, goal, model, today } = analysis
   const [preview, setPreview] = useState(null) // 0~1: 현재→목표 보간
   const h = profile.heightCm
@@ -22,7 +24,7 @@ export default function AvatarCard({ analysis, profile, onCustomize }) {
     return (
       <figure className={`fig fig--${variant}`}>
         <div className="fig__stage">
-          <Avatar sex={profile.sex} heightCm={h} weightKg={w} variant={variant} look={profile.avatar} size={variant === 'current' ? 230 : 210} />
+          <Avatar sex={profile.sex} heightCm={h} weightKg={w} variant={variant} look={look} size={variant === 'current' ? 230 : 210} />
         </div>
         <figcaption>
           <div className="fig__label">{label}</div>

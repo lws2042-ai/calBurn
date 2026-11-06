@@ -45,3 +45,33 @@ describe('주간 예산', () => {
     assert.equal(b.normalBudget, 1500)
   })
 })
+
+describe('칼로리 쿠폰', () => {
+  it('쿠폰은 주 예산을 늘리고 다른 날을 깎지 않는다', () => {
+    const b = weeklyBudget({
+      today: '2026-11-02',
+      maintenance: 2500,
+      deficit: 500,
+      intakeOf: () => null,
+      plans: { '2026-11-06': { label: '🎟 쿠폰', extraKcal: 500, couponKcal: 500 } },
+    })
+    assert.equal(b.weekBudget, 14500)
+    assert.ok(Math.abs(b.normalBudget - 2000) < 1e-9) // 평범한 날은 그대로
+    assert.equal(b.days.find((d) => d.date === '2026-11-06').budget, 2500)
+  })
+  it('안전한 적자 주에만 쿠폰 획득, 굶은 주는 제외', async () => {
+    const { earnedCoupons } = await import('./coupons.js')
+    const series = []
+    // 11/2(월)~11/8: 적자 −450 (목표 500의 90%) → 획득
+    // 11/9~11/15: 적자 −1500 (굶기) → 제외
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(2026, 10, 2 + i)
+      const date = `2026-11-${String(d.getDate()).padStart(2, '0')}`
+      series.push({ date, intake: i < 7 ? 2000 : 1500, balance: i < 7 ? -450 : -1500 })
+    }
+    const c = earnedCoupons(series, { today: '2026-11-20', deficit: 500, sex: 'M' })
+    assert.equal(c.length, 1)
+    assert.equal(c[0].earned, '2026-11-09')
+    assert.equal(c[0].expires, '2026-11-22')
+  })
+})

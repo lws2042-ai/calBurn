@@ -5,6 +5,7 @@
 
 import { KCAL_PER_KG, MIN_SAFE_INTAKE } from './constants.js'
 import { addDays } from './dates.js'
+import { HONEST_XP_MULT, ledgerAccuracy } from './honesty.js'
 
 export const XP = {
   weigh: 10,
@@ -124,6 +125,7 @@ export const ACHIEVEMENTS = [
   { id: 'seal', icon: '🦭', title: '물개', desc: '수영 누적 10시간' },
   { id: 'calibrated', icon: '🎯', title: '정밀 측정기', desc: '섭취 21일 기록 → 실측 보정 100%' },
   { id: 'defense', icon: '🏹', title: '칼로리 디펜더', desc: '칼로리 디펜스 3,000점' },
+  { id: 'honest', icon: '🧾', title: '정직한 장부', desc: '기록이 2주 뒤 체중을 70% 이상 정확히 예측' },
 ]
 
 export function achievementDates(state, analysis) {
@@ -182,19 +184,53 @@ export function achievementDates(state, analysis) {
   return { got, progress: { runKm, climbM, swimMin, deficit, loggedDays, run } }
 }
 
+/**
+ * 정직한 장부 이력: 7일마다 "지난 14일 기록이 체중을 예측했는가"를 검증.
+ * 통과한 주의 XP에는 ×1.2 보너스.
+ */
+export function honestyHistory(state, analysis) {
+  const series = analysis.series
+  const first = series[0]?.date
+  if (!first) return { checks: [], firstHonest: null, current: null }
+  const checks = []
+  const cache = new Map([[analysis.today, analysis]]) // 검증 시점끼리 겹치는 분석 재사용
+  for (let d = addDays(first, 28); d <= analysis.today; d = addDays(d, 7)) {
+    const r = ledgerAccuracy(state, d, cache)
+    if (r) checks.push({ date: d, ...r })
+  }
+  const current = ledgerAccuracy(state, analysis.today, cache)
+  return { checks, firstHonest: checks.find((c) => c.honest)?.date ?? (current?.honest ? analysis.today : null), current }
+}
+
 export function gamify(state, analysis) {
   const losing = analysis.goal < analysis.startWeight
   const sex = state.profile.sex
-  const totalXp = analysis.series.reduce((s, r) => s + dayXp(r, losing, sex), 0) + (state.game?.xp ?? 0)
+  const xpByDate = new Map(analysis.series.map((r) => [r.date, dayXp(r, losing, sex)]))
+  const baseXp = [...xpByDate.values()].reduce((s, v) => s + v, 0)
+
+  // 정직한 장부 보너스: 통과한 검증 시점 직전 7일의 XP × 0.2
+  const honesty = honestyHistory(state, analysis)
+  let honestBonus = 0
+  for (const c of honesty.checks) {
+    if (!c.honest) continue
+    for (let i = 0; i < 7; i++) honestBonus += (xpByDate.get(addDays(c.date, -i)) ?? 0) * (HONEST_XP_MULT - 1)
+  }
+  const totalXp = Math.round(baseXp + honestBonus) + (state.game?.xp ?? 0)
   const lv = levelOf(totalXp)
+  const honestNow = !!honesty.current?.honest
+  const todayBase = dayXp(analysis.todayRow, losing, sex)
+  const achievements = achievementDates(state, analysis)
+  if (honesty.firstHonest) achievements.got.honest = honesty.firstHonest
+
   return {
     xp: totalXp,
     ...lv,
     title: titleOf(lv.level),
-    todayXp: dayXp(analysis.todayRow, losing, sex),
+    todayXp: Math.round(todayBase * (honestNow ? HONEST_XP_MULT : 1)),
+    honesty: { ...honesty.current, honestNow, bonusXp: Math.round(honestBonus), mult: HONEST_XP_MULT },
     streak: streaks(analysis.series),
     quests: dailyQuests(analysis.todayRow, losing, sex),
-    achievements: achievementDates(state, analysis),
+    achievements,
     yesterday: addDays(analysis.today, -1),
   }
 }

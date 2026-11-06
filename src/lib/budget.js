@@ -31,7 +31,10 @@ export function weeklyBudget({ today, maintenance, deficit = DEFAULT_DEFICIT, in
   const start = weekStart(today)
   const target = maintenance - deficit // 평범한 하루 목표
   const floor = MIN_SAFE_INTAKE[sex] ?? 1200
-  const weekBudget = target * 7
+  // 칼로리 쿠폰: 이번 주에 쓴 쿠폰만큼 주 예산이 늘어난다 (다른 날을 깎지 않음)
+  let couponKcal = 0
+  for (let i = 0; i < 7; i++) couponKcal += plans[addDays(start, i)]?.couponKcal ?? 0
+  const weekBudget = target * 7 + couponKcal
 
   const days = []
   let spent = 0
@@ -60,7 +63,7 @@ export function weeklyBudget({ today, maintenance, deficit = DEFAULT_DEFICIT, in
   }
 
   // 등록된 이벤트로 평범한 날이 하루 얼마나 줄었는지
-  const eventExtra = future.filter((d) => d.plan).reduce((s, d) => s + d.plan.extraKcal, 0)
+  const eventExtra = future.filter((d) => d.plan).reduce((s, d) => s + d.plan.extraKcal - (d.plan.couponKcal ?? 0), 0)
   const pastOver = spent - days.filter((d) => d.past).reduce((s, d) => s + target + (d.plan?.extraKcal ?? 0), 0)
 
   return {
@@ -75,6 +78,7 @@ export function weeklyBudget({ today, maintenance, deficit = DEFAULT_DEFICIT, in
     floorHit,
     eventExtra,
     pastOver, // 지난 날 초과(+)/절약(−) 합
+    couponKcal,
     days,
     today: days.find((d) => d.isToday),
     daysLeft: diffDays(today, addDays(start, 6)) + 1,

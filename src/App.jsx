@@ -10,6 +10,7 @@ import { analyze } from './lib/engine'
 import { ACHIEVEMENTS, gamify } from './lib/game'
 import { buildDemoState } from './lib/demo'
 import { applyTheme, themeFromSettings } from './lib/themes'
+import { unlockedSet, unlockForAchievement } from './lib/unlocks'
 import { useCalBurn } from './store/useCalBurn'
 
 const TABS = [
@@ -48,6 +49,7 @@ function Main({ state, dispatch, today }) {
   const [date, setDate] = useState(today)
   const analysis = useMemo(() => analyze(state, today), [state, today])
   const game = useMemo(() => gamify(state, analysis), [state, analysis])
+  const unlocked = useMemo(() => unlockedSet(game.achievements.got), [game])
 
   // 새로 달성한 업적 알림 (처음 실행 시 이미 달성한 것은 알리지 않음)
   const got = game.achievements.got
@@ -96,14 +98,14 @@ function Main({ state, dispatch, today }) {
 
       <main className="content">
         {tab === 'dashboard' && (
-          <Dashboard analysis={analysis} game={game} profile={state.profile} entries={state.entries} state={state} dispatch={dispatch} onLog={() => openLog(today)} onChallenge={() => setTab('challenge')} onCustomize={() => setTab('settings')} />
+          <Dashboard analysis={analysis} game={game} profile={state.profile} entries={state.entries} state={state} dispatch={dispatch} unlocked={unlocked} onLog={() => openLog(today)} onChallenge={() => setTab('challenge')} onCustomize={() => setTab('settings')} />
         )}
         {tab === 'log' && (
           <LogDay state={state} dispatch={dispatch} analysis={analysis} date={date} setDate={setDate} today={today} />
         )}
         {tab === 'challenge' && <Challenge game={game} state={state} analysis={analysis} dispatch={dispatch} />}
         {tab === 'history' && <History analysis={analysis} onOpen={openLog} />}
-        {tab === 'settings' && <Settings state={state} dispatch={dispatch} analysis={analysis} today={today} />}
+        {tab === 'settings' && <Settings state={state} dispatch={dispatch} analysis={analysis} today={today} unlocked={unlocked} />}
       </main>
 
       {fresh && (
@@ -113,6 +115,9 @@ function Main({ state, dispatch, today }) {
             <small>업적 달성</small>
             <b>{fresh.title}</b>
             <span className="muted small">{fresh.desc}</span>
+            {unlockForAchievement(fresh.id).length > 0 && (
+              <span className="reward">🎁 아바타 아이템 해금: {unlockForAchievement(fresh.id).map((u) => `${u.icon} ${u.label}`).join(', ')}</span>
+            )}
           </span>
         </button>
       )}

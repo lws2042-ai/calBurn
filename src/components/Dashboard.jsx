@@ -9,7 +9,7 @@ import AvatarCard from './AvatarCard'
 import ComebackBanner from './ComebackBanner'
 import WeeklyBudget from './WeeklyBudget'
 
-export default function Dashboard({ analysis: a, game, profile, entries, state, dispatch, onLog, onChallenge, onCustomize }) {
+export default function Dashboard({ analysis: a, game, profile, entries, state, dispatch, unlocked, onLog, onChallenge, onCustomize }) {
   const losing = a.goal < a.current
   return (
     <div className="stack">
@@ -45,7 +45,7 @@ export default function Dashboard({ analysis: a, game, profile, entries, state, 
 
       {state && <WeeklyBudget state={state} analysis={a} dispatch={dispatch} />}
 
-      <AvatarCard analysis={a} profile={profile} onCustomize={onCustomize} />
+      <AvatarCard analysis={a} profile={profile} unlocked={unlocked} onCustomize={onCustomize} />
 
       <WeightInsight analysis={a} entries={entries} onLog={onLog} />
 

@@ -28,7 +28,10 @@ export const HAIR_STYLES = {
 export const EYE_STYLES = { almond: '아몬드형', round: '둥근 눈', sharp: '날렵한 눈' }
 export const FACE_SHAPES = { oval: '계란형', round: '둥근형', slim: '갸름형' }
 
-export const TOP_STYLES = { tshirt: '티셔츠', shirt: '셔츠', hoodie: '후드', tank: '민소매' }
+export const TOP_STYLES = { tshirt: '티셔츠', shirt: '셔츠', hoodie: '후드', tank: '민소매', track: '트레이닝복', jacket: '가죽 재킷' }
+export const SHOE_STYLES = { basic: '기본', runner: '러닝화' }
+export const ACCESSORIES = { none: '없음', sunglasses: '선글라스', headband: '헤드밴드', medal: '완주 메달', cap: '등산 모자', crown: '왕관' }
+export const AURAS = { none: '없음', gold: '골드 오라' }
 export const BOTTOM_STYLES = { shorts: '반바지', slacks: '슬랙스', jeans: '청바지', skirt: '스커트' }
 
 export const CLOTH_COLORS = [
@@ -52,6 +55,9 @@ export function defaultLook(sex) {
     eyes: 'almond',
     face: 'oval',
     glasses: false,
+    shoes: 'basic',
+    accessory: 'none',
+    aura: 'none',
     top: { style: 'shirt', color: '#e8e4da' }, // 셔츠 · 아이보리
     bottom: { style: 'jeans', color: '#3f6fb0' }, // 청바지 · 데님
   }

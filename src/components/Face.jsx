@@ -197,8 +197,63 @@ export default function Face({ cx, hy, rx, ry, f, sex, variant, uid, look, layer
           <path d={`M${cx + rx * 0.2},${capTop + 2.8} Q${cx + rx * 0.45},${capTop + 2.6} ${cx + rx * 0.62},${capTop + 4.2}`} fill="none" stroke={HAIR.light} strokeWidth="1.2" strokeLinecap="round" />
         </g>
 
-        {/* 안경 */}
-        {look.glasses && (
+        {/* ── 해금 아이템: 머리 소품 ── */}
+        {look.accessory === 'headband' && (
+          <path
+            d={`M${cx - rx - 1.5},${hy - ry * 0.5} Q${cx},${hy - ry * 0.78} ${cx + rx + 1.5},${hy - ry * 0.5} L${cx + rx + 1.5},${hy - ry * 0.32} Q${cx},${hy - ry * 0.6} ${cx - rx - 1.5},${hy - ry * 0.32} Z`}
+            style={{ fill: 'var(--accent)' }}
+            stroke="#000"
+            strokeOpacity="0.25"
+            strokeWidth="0.5"
+          />
+        )}
+        {look.accessory === 'cap' && (
+          <g>
+            <path d={`M${cx - rx - 2},${hy - ry * 0.42} Q${cx - rx},${capTop - 3} ${cx},${capTop - 4} Q${cx + rx},${capTop - 3} ${cx + rx + 2},${hy - ry * 0.42} Z`} fill="#3d5a40" stroke="#1d2b1f" strokeWidth="0.7" />
+            <path d={`M${cx - rx - 2},${hy - ry * 0.42} Q${cx - rx * 0.2},${hy - ry * 0.3} ${cx + rx + 9},${hy - ry * 0.4} L${cx + rx + 2},${hy - ry * 0.48} Z`} fill="#2c4430" />
+            <circle cx={cx} cy={capTop - 3.5} r="1.2" fill="#2c4430" />
+            <path d={`M${cx - 4},${hy - ry * 0.75} l3,-3 l2,2 l3,-4`} fill="none" stroke="#e8e4da" strokeWidth="0.9" />
+          </g>
+        )}
+        {look.accessory === 'crown' && (
+          <g>
+            <path
+              d={`M${cx - rx * 0.62},${capTop + 1} L${cx - rx * 0.66},${capTop - 9} L${cx - rx * 0.32},${capTop - 3} L${cx},${capTop - 12} L${cx + rx * 0.32},${capTop - 3} L${cx + rx * 0.66},${capTop - 9} L${cx + rx * 0.62},${capTop + 1} Z`}
+              fill="#f7c948"
+              stroke="#a87d17"
+              strokeWidth="0.8"
+              filter={`url(#${g('soft')})`}
+              opacity="0.5"
+            />
+            <path
+              d={`M${cx - rx * 0.62},${capTop + 1} L${cx - rx * 0.66},${capTop - 9} L${cx - rx * 0.32},${capTop - 3} L${cx},${capTop - 12} L${cx + rx * 0.32},${capTop - 3} L${cx + rx * 0.66},${capTop - 9} L${cx + rx * 0.62},${capTop + 1} Z`}
+              fill="#f7c948"
+              stroke="#a87d17"
+              strokeWidth="0.8"
+            />
+            <circle cx={cx} cy={capTop - 3} r="1.5" fill="#d6453d" />
+            <circle cx={cx - rx * 0.45} cy={capTop - 1.5} r="1" fill="#3f6fb0" />
+            <circle cx={cx + rx * 0.45} cy={capTop - 1.5} r="1" fill="#3f6fb0" />
+          </g>
+        )}
+        {look.accessory === 'sunglasses' && (
+          <g>
+            {[-1, 1].map((d) => (
+              <path
+                key={d}
+                d={`M${cx + d * (eyeDX - eyeW - 1.6)},${eyeY - eyeH - 0.6} L${cx + d * (eyeDX + eyeW + 1.8)},${eyeY - eyeH - 1} Q${cx + d * (eyeDX + eyeW + 1.2)},${eyeY + eyeH + 1.8} ${cx + d * eyeDX},${eyeY + eyeH + 1.6} Q${cx + d * (eyeDX - eyeW - 1.4)},${eyeY + eyeH + 1} ${cx + d * (eyeDX - eyeW - 1.6)},${eyeY - eyeH - 0.6} Z`}
+                fill="#14161a"
+                stroke="#000"
+                strokeWidth="0.6"
+              />
+            ))}
+            <path d={`M${cx - eyeDX + eyeW + 1.4},${eyeY - eyeH} L${cx + eyeDX - eyeW - 1.4},${eyeY - eyeH}`} stroke="#14161a" strokeWidth="1.2" />
+            <path d={`M${cx - eyeDX - 1},${eyeY - eyeH + 0.6} l2.5,0.8 M${cx + eyeDX + 1},${eyeY - eyeH + 0.6} l2.5,0.8`} stroke="#fff" strokeOpacity="0.5" strokeWidth="0.8" />
+          </g>
+        )}
+
+        {/* 안경 (선글라스를 쓰면 생략) */}
+        {look.glasses && look.accessory !== 'sunglasses' && (
           <g fill="rgba(255,255,255,0.08)" stroke="#1d1a19" strokeWidth="0.75">
             <rect x={cx - eyeDX - eyeW - 1.2} y={eyeY - eyeH - 1.3} width={eyeW * 2 + 2.4} height={eyeH * 2 + 1.8} rx="2.2" />
             <rect x={cx + eyeDX - eyeW - 1.2} y={eyeY - eyeH - 1.3} width={eyeW * 2 + 2.4} height={eyeH * 2 + 1.8} rx="2.2" />

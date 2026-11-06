@@ -85,8 +85,23 @@ function reducer(state, action) {
       return { ...state, plans: { ...state.plans, [action.date]: action.plan } }
     case 'removePlan': {
       const plans = { ...state.plans }
+      const removed = plans[action.date]
       delete plans[action.date]
-      return { ...state, plans }
+      // 쿠폰을 쓴 일정을 지우면 쿠폰도 돌려준다
+      const couponsUsed = { ...state.couponsUsed }
+      for (const id of removed?.couponIds ?? []) delete couponsUsed[id]
+      return { ...state, plans, couponsUsed }
+    }
+    case 'useCoupon': {
+      const prev = state.plans?.[action.date]
+      const plan = prev
+        ? { ...prev, label: `${prev.label} + 쿠폰`, extraKcal: prev.extraKcal + action.coupon.kcal, couponKcal: (prev.couponKcal ?? 0) + action.coupon.kcal, couponIds: [...(prev.couponIds ?? []), action.coupon.id] }
+        : { label: '🎟 쿠폰', extraKcal: action.coupon.kcal, couponKcal: action.coupon.kcal, couponIds: [action.coupon.id] }
+      return {
+        ...state,
+        plans: { ...state.plans, [action.date]: plan },
+        couponsUsed: { ...state.couponsUsed, [action.coupon.id]: action.date },
+      }
     }
     case 'setDeficit':
       return { ...state, settings: { ...state.settings, dailyDeficit: action.deficit } }

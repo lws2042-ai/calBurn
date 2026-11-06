@@ -68,3 +68,19 @@ select {
 .water__rows > div { justify-content: space-between; }
 .water__rows > div > span:first-child { min-width: 0; }
 .water p { margin: 0; }
+
+/* ─── 정직한 장부 ─── */
+.honest-pill { margin-top: 6px; display: inline-block; padding: 2px 8px; border: 1px dashed var(--line-strong); border-radius: var(--r-sm); color: var(--muted); }
+.honest-pill.on { color: var(--accent); border: 1px solid var(--accent); background: var(--accent-soft); }
+.honesty--on { border-color: var(--accent); }
+.honesty__score { font-size: 1.4rem; font-weight: 700; color: var(--accent); text-shadow: var(--text-glow); }
+.honesty:not(.honesty--on) .honesty__score { color: var(--warn); text-shadow: none; }
+.honesty__bars { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 6px; }
+.honesty__bars b { color: var(--text); }
+.honesty p { margin: 4px 0 0; }
+
+/* ─── 칼로리 쿠폰 ─── */
+.coupon { margin: 10px 0; padding: 10px 12px; display: grid; gap: 6px; border: 1px dashed var(--warn); border-radius: var(--r-sm); background: var(--warn-soft); }
+.coupon__row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.coupon__count b { font-size: 1.1rem; color: var(--warn); }
+.coupon__progress { line-height: 1.6; }

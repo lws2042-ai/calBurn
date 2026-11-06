@@ -1,4 +1,6 @@
 import {
+  ACCESSORIES,
+  AURAS,
   BOTTOM_STYLES,
   CLOTH_COLORS,
   EYE_STYLES,
@@ -6,16 +8,26 @@ import {
   HAIR_COLORS,
   HAIR_STYLES,
   resolveLook,
+  SHOE_STYLES,
   SKIN_TONES,
   TOP_STYLES,
 } from '../lib/avatarLook'
+import { ACHIEVEMENTS } from '../lib/game'
+import { isLocked, sanitizeLook, UNLOCKS } from '../lib/unlocks'
 import Avatar from './Avatar'
+
+const achTitle = (id) => ACHIEVEMENTS.find((a) => a.id === id)?.title ?? id
 
 const FACE_CROP = '50 8 60 60'
 
 /** 아바타 꾸미기: 얼굴·헤어·옷. 바꾸는 즉시 저장된다. */
-export default function AvatarCustomizer({ profile, weightKg, onChange }) {
-  const look = resolveLook(profile.avatar, profile.sex)
+export default function AvatarCustomizer({ profile, weightKg, onChange, unlocked = new Set() }) {
+  const look = sanitizeLook(resolveLook(profile.avatar, profile.sex), unlocked)
+  const lockOf = (slot) => (k) => isLocked(slot, k, unlocked)
+  const condOf = (slot) => (k) => {
+    const u = UNLOCKS.find((x) => x.slot === slot && x.value === k)
+    return u ? `🔒 업적 「${achTitle(u.achievement)}」 달성 시 해금` : null
+  }
   const set = (patch) => onChange({ ...look, ...patch })
   const base = { sex: profile.sex, heightCm: profile.heightCm }
 
@@ -38,6 +50,21 @@ export default function AvatarCustomizer({ profile, weightKg, onChange }) {
       </div>
 
       <div className="customizer__opts">
+        <Group label={`🎁 해금 아이템 ${UNLOCKS.filter((u) => unlocked.has(u.id)).length}/${UNLOCKS.length} — 업적을 달성하면 열립니다`}>
+          <div className="unlock-grid">
+            {UNLOCKS.map((u) => {
+              const on = unlocked.has(u.id)
+              return (
+                <div key={u.id} className={on ? 'unlock on' : 'unlock'} title={on ? '해금됨 — 아래에서 착용할 수 있어요' : `업적 「${achTitle(u.achievement)}」 달성 시 해금`}>
+                  <div className="unlock__icon">{on ? u.icon : '🔒'}</div>
+                  <div className="unlock__label">{u.label}</div>
+                  <div className="unlock__cond">{on ? '해금됨' : achTitle(u.achievement)}</div>
+                </div>
+              )
+            })}
+          </div>
+        </Group>
+
         <Group label="헤어스타일">
           <div className="thumbs">
             {Object.entries(HAIR_STYLES).map(([k, label]) => (
@@ -71,13 +98,25 @@ export default function AvatarCustomizer({ profile, weightKg, onChange }) {
         </Group>
 
         <Group label="윗옷">
-          <Chips items={TOP_STYLES} value={look.top.style} onPick={(k) => set({ top: { ...look.top, style: k } })} />
+          <Chips items={TOP_STYLES} value={look.top.style} onPick={(k) => set({ top: { ...look.top, style: k } })} locked={lockOf('top')} cond={condOf('top')} />
           <Swatches items={CLOTH_COLORS.map((c) => [c.hex, c.hex, c.label])} value={look.top.color} onPick={(k) => set({ top: { ...look.top, color: k } })} />
         </Group>
 
         <Group label="하의">
           <Chips items={BOTTOM_STYLES} value={look.bottom.style} onPick={(k) => set({ bottom: { ...look.bottom, style: k } })} />
           <Swatches items={CLOTH_COLORS.map((c) => [c.hex, c.hex, c.label])} value={look.bottom.color} onPick={(k) => set({ bottom: { ...look.bottom, color: k } })} />
+        </Group>
+
+        <Group label="신발">
+          <Chips items={SHOE_STYLES} value={look.shoes} onPick={(k) => set({ shoes: k })} locked={lockOf('shoes')} cond={condOf('shoes')} />
+        </Group>
+
+        <Group label="소품">
+          <Chips items={ACCESSORIES} value={look.accessory} onPick={(k) => set({ accessory: k })} locked={lockOf('accessory')} cond={condOf('accessory')} />
+        </Group>
+
+        <Group label="오라">
+          <Chips items={AURAS} value={look.aura} onPick={(k) => set({ aura: k })} locked={lockOf('aura')} cond={condOf('aura')} />
         </Group>
 
         <button className="btn btn--ghost small-btn" onClick={() => onChange(null)}>
@@ -97,14 +136,25 @@ function Group({ label, children }) {
   )
 }
 
-function Chips({ items, value, onPick }) {
+function Chips({ items, value, onPick, locked = () => false, cond = () => null }) {
   return (
     <div className="chips">
-      {Object.entries(items).map(([k, label]) => (
-        <button key={k} type="button" className={value === k ? 'chip on' : 'chip'} onClick={() => onPick(k)}>
-          {label}
-        </button>
-      ))}
+      {Object.entries(items).map(([k, label]) => {
+        const lk = locked(k)
+        return (
+          <button
+            key={k}
+            type="button"
+            className={`chip ${value === k ? 'on' : ''} ${lk ? 'locked' : ''}`}
+            onClick={() => !lk && onPick(k)}
+            disabled={lk}
+            title={lk ? cond(k) ?? '' : undefined}
+          >
+            {lk ? '🔒 ' : ''}
+            {label}
+          </button>
+        )
+      })}
     </div>
   )
 }
