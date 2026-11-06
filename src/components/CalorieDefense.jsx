@@ -788,9 +788,6 @@ export default function CalorieDefense({ weightKg, profile, best, onFinish, entr
               </li>
             </ul>
             <p className="muted small">마우스/터치로 조준 · 누르고 있으면 연사 · ←→ 이동, Space 발사, 1~6 화살, P 일시정지</p>
-            <button className="btn btn--play btn--play-sm" onClick={start}>
-              ▶ 시작
-            </button>
           </div>
         )}
         {phase === 'over' && result && (
